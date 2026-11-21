@@ -54,6 +54,9 @@ describe("npm run collect (pipeline)", () => {
     expect(report.normalized).toBe(19);
     expect(report.unique).toBe(17);
     expect(report.inserted).toBe(17);
+    expect(report.top).toHaveLength(10);
+    const topScores = report.top.map((job) => job.score);
+    expect(topScores).toEqual(topScores.toSorted((a, b) => b - a));
 
     const jobs = await listJobs(handle.db, all);
     expect(jobs).toHaveLength(17);
