@@ -1,0 +1,162 @@
+[
+  {
+    "url": "https://api.github.com/repos/backend-br/vagas/issues/4401",
+    "repository_url": "https://api.github.com/repos/backend-br/vagas",
+    "labels_url": "https://api.github.com/repos/backend-br/vagas/issues/4401/labels{/name}",
+    "comments_url": "https://api.github.com/repos/backend-br/vagas/issues/4401/comments",
+    "events_url": "https://api.github.com/repos/backend-br/vagas/issues/4401/events",
+    "html_url": "https://github.com/backend-br/vagas/issues/4401",
+    "id": 3000004401,
+    "node_id": "I_kwDOAbc4401",
+    "number": 4401,
+    "title": "[Remoto] Desenvolvedor Golang Pleno @ Fintech Ipê",
+    "user": {
+      "login": "fintechipe",
+      "id": 104401,
+      "type": "User",
+      "site_admin": false
+    },
+    "labels": [
+      {
+        "id": 3184497562,
+        "node_id": "LA_kwDO52656d6f74",
+        "url": "https://api.github.com/repos/backend-br/vagas/labels/Remoto",
+        "name": "Remoto",
+        "color": "ededed",
+        "default": false,
+        "description": null
+      },
+      {
+        "id": 3886957382,
+        "node_id": "LA_kwDO506c656e6f",
+        "url": "https://api.github.com/repos/backend-br/vagas/labels/Pleno",
+        "name": "Pleno",
+        "color": "ededed",
+        "default": false,
+        "description": null
+      },
+      {
+        "id": 1835788069,
+        "node_id": "LA_kwDO504a",
+        "url": "https://api.github.com/repos/backend-br/vagas/labels/PJ",
+        "name": "PJ",
+        "color": "ededed",
+        "default": false,
+        "description": null
+      }
+    ],
+    "state": "open",
+    "locked": false,
+    "assignee": null,
+    "assignees": [],
+    "milestone": null,
+    "comments": 0,
+    "created_at": "2026-11-19T09:00:00Z",
+    "updated_at": "2026-11-19T09:00:00Z",
+    "closed_at": null,
+    "author_association": "NONE",
+    "type": null,
+    "active_lock_reason": null,
+    "sub_issues_summary": {
+      "total": 0,
+      "completed": 0,
+      "percent_completed": 0
+    },
+    "body": "## Descrição da vaga\n\nMicrosserviços de pagamentos de alta disponibilidade.\n\n## Requisitos\n\n- Experiência com Go em produção\n- PostgreSQL\n- Docker e Kubernetes\n\n## Contratação\n\nPJ\n",
+    "reactions": {
+      "url": "https://api.github.com/repos/backend-br/vagas/issues/4401/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "timeline_url": "https://api.github.com/repos/backend-br/vagas/issues/4401/timeline",
+    "performed_via_github_app": null,
+    "state_reason": null
+  },
+  {
+    "url": "https://api.github.com/repos/backend-br/vagas/issues/4402",
+    "repository_url": "https://api.github.com/repos/backend-br/vagas",
+    "labels_url": "https://api.github.com/repos/backend-br/vagas/issues/4402/labels{/name}",
+    "comments_url": "https://api.github.com/repos/backend-br/vagas/issues/4402/comments",
+    "events_url": "https://api.github.com/repos/backend-br/vagas/issues/4402/events",
+    "html_url": "https://github.com/backend-br/vagas/issues/4402",
+    "id": 3000004402,
+    "node_id": "I_kwDOAbc4402",
+    "number": 4402,
+    "title": "[Remoto] Desenvolvedor(a) Node.js/NestJS Pleno @ LogiTrack",
+    "user": {
+      "login": "logitrack",
+      "id": 104402,
+      "type": "User",
+      "site_admin": false
+    },
+    "labels": [
+      {
+        "id": 3184497562,
+        "node_id": "LA_kwDO52656d6f74",
+        "url": "https://api.github.com/repos/backend-br/vagas/labels/Remoto",
+        "name": "Remoto",
+        "color": "ededed",
+        "default": false,
+        "description": null
+      },
+      {
+        "id": 3886957382,
+        "node_id": "LA_kwDO506c656e6f",
+        "url": "https://api.github.com/repos/backend-br/vagas/labels/Pleno",
+        "name": "Pleno",
+        "color": "ededed",
+        "default": false,
+        "description": null
+      },
+      {
+        "id": 3176628079,
+        "node_id": "LA_kwDO434c54",
+        "url": "https://api.github.com/repos/backend-br/vagas/labels/CLT",
+        "name": "CLT",
+        "color": "ededed",
+        "default": false,
+        "description": null
+      }
+    ],
+    "state": "open",
+    "locked": false,
+    "assignee": null,
+    "assignees": [],
+    "milestone": null,
+    "comments": 0,
+    "created_at": "2026-11-18T19:30:00Z",
+    "updated_at": "2026-11-18T19:30:00Z",
+    "closed_at": null,
+    "author_association": "NONE",
+    "type": null,
+    "active_lock_reason": null,
+    "sub_issues_summary": {
+      "total": 0,
+      "completed": 0,
+      "percent_completed": 0
+    },
+    "body": "## Descrição da vaga\n\nPlataforma de rastreamento logístico.\n\n## Requisitos\n\n- Node.js e NestJS com TypeScript\n- APIs REST em Node.js ou Java\n- PostgreSQL e Prisma\n- Testes automatizados\n\n## Diferenciais\n\n- AWS\n- Docker\n- Kotlin\n\n## Contratação\n\nCLT\n\n## Salário\n\nR$ 8.000 a R$ 10.000\n",
+    "reactions": {
+      "url": "https://api.github.com/repos/backend-br/vagas/issues/4402/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "timeline_url": "https://api.github.com/repos/backend-br/vagas/issues/4402/timeline",
+    "performed_via_github_app": null,
+    "state_reason": null
+  }
+]

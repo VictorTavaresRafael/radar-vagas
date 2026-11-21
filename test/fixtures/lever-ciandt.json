@@ -1,0 +1,100 @@
+[
+  {
+    "additional": "<div>Contratação CLT com benefícios flexíveis. Trabalho 100% remoto.</div>",
+    "additionalPlain": "Contratação CLT com benefícios flexíveis. Trabalho 100% remoto.",
+    "categories": {
+      "commitment": "CLT",
+      "department": "Engenharia",
+      "location": "Brasil - Remoto",
+      "team": "Engenharia de Software",
+      "allLocations": ["Brasil - Remoto"]
+    },
+    "createdAt": 1795100400000,
+    "descriptionPlain": "Na CI&T você vai construir produtos digitais para grandes clientes, do front-end ao back-end, em times ágeis.",
+    "description": "<div>Na CI&T você vai construir produtos digitais para grandes clientes, do front-end ao back-end, em times ágeis.</div>",
+    "descriptionBody": "<div>Na CI&T você vai construir produtos digitais para grandes clientes, do front-end ao back-end, em times ágeis.</div>",
+    "descriptionBodyPlain": "Na CI&T você vai construir produtos digitais para grandes clientes, do front-end ao back-end, em times ágeis.",
+    "id": "a3f1c2d4-5b6e-4f70-8a91-0b2c3d4e5f60",
+    "lists": [
+      {
+        "text": "Requisitos",
+        "content": "<li>Experiência com React, TypeScript e Next.js</li><li>APIs REST com Node.js e NestJS</li><li>Testes automatizados com Jest</li><li>Inglês intermediário para leitura de documentação</li>"
+      },
+      {
+        "text": "Diferenciais",
+        "content": "<li>AWS (Lambda, S3)</li><li>Docker</li><li>Kubernetes</li>"
+      }
+    ],
+    "text": "Pessoa Desenvolvedora Full Stack Pleno - React e Node.js",
+    "country": "BR",
+    "workplaceType": "remote",
+    "opening": "",
+    "openingPlain": "",
+    "hostedUrl": "https://jobs.lever.co/ciandt/a3f1c2d4-5b6e-4f70-8a91-0b2c3d4e5f60",
+    "applyUrl": "https://jobs.lever.co/ciandt/a3f1c2d4-5b6e-4f70-8a91-0b2c3d4e5f60/apply"
+  },
+  {
+    "additional": "<div>Modelo híbrido: 3 dias por semana no escritório de Campinas.</div>",
+    "additionalPlain": "Modelo híbrido: 3 dias por semana no escritório de Campinas.",
+    "categories": {
+      "commitment": "CLT",
+      "department": "Engenharia",
+      "location": "Campinas, SP",
+      "team": "Engenharia de Software",
+      "allLocations": ["Campinas, SP"]
+    },
+    "createdAt": 1795003200000,
+    "descriptionPlain": "Atuação em sistemas de missão crítica para o setor financeiro.",
+    "description": "<div>Atuação em sistemas de missão crítica para o setor financeiro.</div>",
+    "descriptionBody": "<div>Atuação em sistemas de missão crítica para o setor financeiro.</div>",
+    "descriptionBodyPlain": "Atuação em sistemas de missão crítica para o setor financeiro.",
+    "id": "b4e2d3c5-6c7f-4a81-9ba2-1c3d4e5f6071",
+    "lists": [
+      {
+        "text": "Requisitos",
+        "content": "<li>Java 21 e Spring Boot</li><li>Microsserviços e mensageria (Kafka)</li><li>SQL</li>"
+      },
+      {
+        "text": "Diferenciais",
+        "content": "<li>React</li>"
+      }
+    ],
+    "text": "Pessoa Desenvolvedora Java Pleno",
+    "country": "BR",
+    "workplaceType": "hybrid",
+    "opening": "",
+    "openingPlain": "",
+    "hostedUrl": "https://jobs.lever.co/ciandt/b4e2d3c5-6c7f-4a81-9ba2-1c3d4e5f6071",
+    "applyUrl": "https://jobs.lever.co/ciandt/b4e2d3c5-6c7f-4a81-9ba2-1c3d4e5f6071/apply"
+  },
+  {
+    "additional": "<div></div>",
+    "additionalPlain": "",
+    "categories": {
+      "commitment": "CLT",
+      "department": "Engenharia",
+      "location": "Campinas, SP",
+      "team": "Engenharia de Software",
+      "allLocations": ["Campinas, SP"]
+    },
+    "createdAt": 1795165200000,
+    "descriptionPlain": "Time de produto no cliente, trabalho presencial em Campinas.",
+    "description": "<div>Time de produto no cliente, trabalho presencial em Campinas.</div>",
+    "descriptionBody": "<div>Time de produto no cliente, trabalho presencial em Campinas.</div>",
+    "descriptionBodyPlain": "Time de produto no cliente, trabalho presencial em Campinas.",
+    "id": "c5f3e4d6-7d80-4b92-8cb3-2d4e5f607182",
+    "lists": [
+      {
+        "text": "Requisitos",
+        "content": "<li>React e TypeScript</li><li>Tailwind CSS</li><li>Testes automatizados</li>"
+      }
+    ],
+    "text": "Desenvolvedor(a) Front-end Pleno - Presencial",
+    "country": "BR",
+    "workplaceType": "onsite",
+    "opening": "",
+    "openingPlain": "",
+    "hostedUrl": "https://jobs.lever.co/ciandt/c5f3e4d6-7d80-4b92-8cb3-2d4e5f607182",
+    "applyUrl": "https://jobs.lever.co/ciandt/c5f3e4d6-7d80-4b92-8cb3-2d4e5f607182/apply"
+  }
+]
