@@ -17,6 +17,8 @@ const envSchema = z.object({
   DASHBOARD_PASSWORD: optionalString,
   // A Vercel define VERCEL=1 no build e nas funções.
   VERCEL: optionalString,
+  // O GitHub Actions define GITHUB_ACTIONS=true em todo job.
+  GITHUB_ACTIONS: optionalString,
 });
 
 /**
@@ -24,11 +26,17 @@ const envSchema = z.object({
  * efêmero) e de senha (sem ela, qualquer um com a URL veria e mudaria os dados).
  */
 const deployedEnvSchema = envSchema.superRefine((env, context) => {
-  if (!env.VERCEL) return;
-  for (const key of ["DATABASE_URL", "DASHBOARD_PASSWORD"] as const) {
-    if (!env[key]) {
-      context.addIssue({ code: "custom", path: [key], message: "obrigatória na Vercel" });
-    }
+  const required = (key: "DATABASE_URL" | "DASHBOARD_PASSWORD", where: string) => {
+    if (!env[key])
+      context.addIssue({ code: "custom", path: [key], message: `obrigatória ${where}` });
+  };
+  if (env.VERCEL) {
+    required("DATABASE_URL", "na Vercel");
+    required("DASHBOARD_PASSWORD", "na Vercel");
+  }
+  // Sem o secret, a coleta gravaria num PGlite descartado ao fim do job e terminaria verde.
+  if (env.GITHUB_ACTIONS === "true") {
+    required("DATABASE_URL", "no GitHub Actions (configure o secret DATABASE_URL)");
   }
 });
 
