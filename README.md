@@ -63,11 +63,13 @@ Estrutura de pastas:
 ```
 config/            perfil verificado, currículo, fontes e pesos do score
 drizzle/           migrações SQL geradas pelo drizzle-kit
-scripts/           collect, migrate e seed (executados com tsx)
+eval/              casos rotulados à mão para medir o score
+scripts/           collect, eval, migrate e seed (executados com tsx)
 src/app/           páginas e server actions do painel
 src/collectors/    um arquivo por fonte + heurísticas de extração
 src/db/            schema, cliente (PGlite ou Postgres) e repositórios
 src/domain/        tipos de domínio, catálogo de tecnologias, filtros da URL
+src/eval/          métricas, relatório e gates do eval
 src/drafts/        templates, gerador com LLM e verificação anti-invenção
 src/pipeline/      orquestração da coleta, dedupe e alertas
 src/scoring/       filtros, componentes do score, LLM e palavras-chave
@@ -98,6 +100,7 @@ Outros comandos:
 | Comando               | O que faz                                            |
 | --------------------- | ---------------------------------------------------- |
 | `npm test`            | Vitest, 100% offline (fixtures + PGlite em memória)  |
+| `npm run eval`        | Mede o score contra os casos rotulados de `eval/`    |
 | `npm run typecheck`   | Gera os tipos de rota do Next e roda `tsc --noEmit`  |
 | `npm run lint`        | Biome (lint + formatação)                            |
 | `npm run build`       | Build de produção                                    |
@@ -130,6 +133,29 @@ No GitHub, configure `DATABASE_URL`, `ANTHROPIC_API_KEY`, `TELEGRAM_BOT_TOKEN` e
 4. Tudo fica em `jobs.score_breakdown` (jsonb), que o painel mostra componente a componente.
 
 O score é calculado na primeira vez que a vaga aparece; coletas seguintes só atualizam `last_seen_at` e as URLs extras.
+
+## Eval do score
+
+O score é medido contra **30 casos rotulados à mão** (`eval/cases.ts`), cada um cobrindo uma armadilha da heurística: ".NET como diferencial", "Node.js ou Java", "Golang", inglês fluente só como diferencial, salário em dólar, Java citado só na seção "sobre a empresa" etc. O rótulo é o julgamento humano a partir do perfil, nunca o que o score calcula; se os dois discordam, a divergência é um achado.
+
+`npm run eval` mede, sem LLM (reprodutível e offline):
+
+- **Eliminações**: precisão e recall por regra (linguagem, senioridade, inglês, presencial, salário).
+- **Relevância**: uma vaga conta como relevante quando o score é ≥ `scoring.evaluation.relevantMinScore` (60).
+
+Resultado atual:
+
+| Métrica                    | Precisão | Recall | F1    |
+| -------------------------- | -------- | ------ | ----- |
+| Eliminações (14 esperadas) | 100%     | 100%   | 100%  |
+| Relevância (score ≥ 60)    | 86,7%    | 100%   | 92,9% |
+
+Divergências conhecidas (falsos positivos de relevância):
+
+- **Híbrido fora das cidades aceitas** (`hibrido-curitiba`, score 64): a modalidade zera, mas o resto do score passa de 60. O SPEC não tem filtro eliminatório para esse caso.
+- **Stack fora do perfil sem ser linguagem proibida** (`vue-front`, score 63): Vue não está no perfil, mas TypeScript, senioridade e modalidade bastam para passar de 60.
+
+O CI roda o eval e reprova se a precisão ou o recall das eliminações ficarem abaixo de 90% ou o F1 de relevância abaixo de 80% (`scripts/eval.ts`). Os mínimos só sobem.
 
 ## Rascunhos sem invenção
 
