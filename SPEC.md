@@ -45,8 +45,8 @@ Empresas iniciais (configuráveis em `config/sources.ts`):
 
 ## Score (0–100), sempre explicado
 
-1. **Filtros eliminatórios** (score 0 + motivo): linguagem principal obrigatória fora do perfil (.NET, Java, PHP, Flutter, Go como requisito, não diferencial); sênior/especialista com 5+ anos obrigatórios; inglês fluente/C1 obrigatório; presencial fora das cidades aceitas; salário divulgado abaixo do piso.
-2. **Pontuação determinística**: stack (React, Next.js, TypeScript, Node/NestJS, Tailwind, Testes, AWS) com pesos; senioridade (pleno > júnior/pleno > sênior); modalidade (remoto > híbrido nas cidades > presencial); salário; recência.
+1. **Filtros eliminatórios** (score 0 + motivo): linguagem principal obrigatória fora do perfil (.NET, Java, PHP, Flutter, Go como requisito, não diferencial); sênior/especialista com 5+ anos obrigatórios; inglês fluente/C1 obrigatório; presencial ou híbrido fora das cidades aceitas; salário divulgado abaixo do piso.
+2. **Pontuação determinística**: stack (React, Next.js, TypeScript, Node/NestJS, Tailwind, Testes, AWS) com pesos, zerada quando a vaga exige framework de front-end fora do perfil (Vue, Svelte) sem citar React/Next.js; senioridade (pleno > júnior/pleno > sênior); modalidade (remoto > híbrido nas cidades > presencial); salário; recência.
 3. **Avaliação LLM opcional**: rubrica fixa, saída JSON validada por zod, nota 0–100 com justificativa curta; média ponderada com o determinístico (peso configurável).
 4. `score_breakdown` guarda cada componente para o painel mostrar o porquê.
 5. Lista de **palavras-chave de ATS** da vaga que não aparecem no currículo, separando "você tem e não escreveu" (constam em `profile.facts`) de "você não tem".

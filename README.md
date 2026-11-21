@@ -8,7 +8,7 @@ Painel pessoal que coleta vagas de tecnologia de APIs públicas, dá a cada uma 
 
 - **Coleta** vagas de Greenhouse, Lever, issues do GitHub (`frontendbr/vagas`, `react-brasil/vagas`, `backend-br/vagas`) e Remotive, duas vezes por dia.
 - **Normaliza e deduplica**: a mesma vaga publicada no ATS da empresa e num repositório do GitHub vira um registro só, com as URLs extras guardadas.
-- **Pontua de forma determinística** (stack, senioridade, modalidade, salário, recência) e aplica **filtros eliminatórios** (linguagem principal fora do perfil, sênior com 5+ anos, inglês fluente obrigatório, presencial fora das cidades aceitas, salário abaixo do piso). Cada ponto tem um motivo escrito.
+- **Pontua de forma determinística** (stack, senioridade, modalidade, salário, recência) e aplica **filtros eliminatórios** (linguagem principal fora do perfil, sênior com 5+ anos, inglês fluente obrigatório, presencial ou híbrido fora das cidades aceitas, salário abaixo do piso). Cada ponto tem um motivo escrito.
 - **Avaliação por LLM opcional** (Anthropic), com rubrica fixa e saída validada por zod, combinada ao score determinístico por média ponderada.
 - **Palavras-chave de ATS** separadas em "você tem e não escreveu no CV" e "você não tem".
 - **Rascunhos** (resumo do CV, mensagem de até 300 caracteres, resposta "fale sobre você") montados só com fatos de `config/profile.ts`, com uma verificação automática que reprova qualquer tecnologia, empresa ou número fora do perfil.
@@ -63,11 +63,13 @@ Estrutura de pastas:
 ```
 config/            perfil verificado, currículo, fontes e pesos do score
 drizzle/           migrações SQL geradas pelo drizzle-kit
-scripts/           collect, migrate e seed (executados com tsx)
+eval/              casos rotulados à mão para medir o score
+scripts/           collect, eval, migrate e seed (executados com tsx)
 src/app/           páginas e server actions do painel
 src/collectors/    um arquivo por fonte + heurísticas de extração
 src/db/            schema, cliente (PGlite ou Postgres) e repositórios
 src/domain/        tipos de domínio, catálogo de tecnologias, filtros da URL
+src/eval/          métricas, relatório e gates do eval
 src/drafts/        templates, gerador com LLM e verificação anti-invenção
 src/pipeline/      orquestração da coleta, dedupe e alertas
 src/scoring/       filtros, componentes do score, LLM e palavras-chave
@@ -98,6 +100,7 @@ Outros comandos:
 | Comando               | O que faz                                            |
 | --------------------- | ---------------------------------------------------- |
 | `npm test`            | Vitest, 100% offline (fixtures + PGlite em memória)  |
+| `npm run eval`        | Mede o score contra os casos rotulados de `eval/`    |
 | `npm run typecheck`   | Gera os tipos de rota do Next e roda `tsc --noEmit`  |
 | `npm run lint`        | Biome (lint + formatação)                            |
 | `npm run build`       | Build de produção                                    |
@@ -125,11 +128,36 @@ No GitHub, configure `DATABASE_URL`, `ANTHROPIC_API_KEY`, `TELEGRAM_BOT_TOKEN` e
 ## Como o score funciona
 
 1. **Filtros eliminatórios** zeram o score e registram o motivo. Eles só olham o título e as linhas de **requisito**: a descrição é dividida em seções (requisitos, diferenciais, benefícios), então ".NET como diferencial" não derruba uma vaga de React, e "Node.js ou Java" também não.
-2. **Componentes determinísticos** (soma = 100): stack 40 (React 10, Next.js 8, TypeScript 8, Node/NestJS 5, Tailwind 3, Testes 3, AWS 3), senioridade 20, modalidade 20, salário 10, recência 10. Os pesos ficam em `config/scoring.ts`.
+2. **Componentes determinísticos** (soma = 100): stack 40 (React 10, Next.js 8, TypeScript 8, Node/NestJS 5, Tailwind 3, Testes 3, AWS 3), senioridade 20, modalidade 20, salário 10, recência 10. A stack zera quando a vaga exige um framework de front-end fora do perfil (Vue, Svelte) sem citar React/Next.js; Angular não conta, porque está nos fatos do perfil. Os pesos ficam em `config/scoring.ts`.
 3. **LLM opcional**: nota 0–100 por rubrica fixa, validada por zod; o final é `determinístico × (1 − peso) + LLM × peso`. Vagas eliminadas não gastam chamada. Se o LLM falhar, o score determinístico continua valendo e o erro aparece no painel.
 4. Tudo fica em `jobs.score_breakdown` (jsonb), que o painel mostra componente a componente.
 
 O score é calculado na primeira vez que a vaga aparece; coletas seguintes só atualizam `last_seen_at` e as URLs extras.
+
+## Eval do score
+
+O score é medido contra **33 casos rotulados à mão** (`eval/cases.ts`), cada um cobrindo uma armadilha da heurística: ".NET como diferencial", "Node.js ou Java", "Golang", inglês fluente só como diferencial, salário em dólar, Java citado só na seção "sobre a empresa" etc. O rótulo é o julgamento humano a partir do perfil, nunca o que o score calcula; se os dois discordam, a divergência é um achado.
+
+`npm run eval` mede, sem LLM (reprodutível e offline):
+
+- **Eliminações**: precisão e recall por regra (linguagem, senioridade, inglês, presencial, salário).
+- **Relevância**: uma vaga conta como relevante quando o score é ≥ `scoring.evaluation.relevantMinScore` (60).
+
+Resultado atual:
+
+| Métrica                    | Precisão | Recall | F1   |
+| -------------------------- | -------- | ------ | ---- |
+| Eliminações (15 esperadas) | 100%     | 100%   | 100% |
+| Relevância (score ≥ 60)    | 100%     | 100%   | 100% |
+
+Nenhuma divergência hoje. As duas que a primeira versão do eval encontrou viraram regras:
+
+- **Híbrido fora das cidades aceitas** (`hibrido-curitiba`) tirava 64; agora é eliminado pela regra `presencial`.
+- **Framework fora do perfil** (`vue-front`) tirava 63; agora a stack zera e o score cai para 55.
+
+Cem por cento num conjunto pequeno, rotulado por quem escreveu as regras, não prova que o score acerta no mundo real: o próximo passo é rotular vagas coletadas de verdade.
+
+O CI roda o eval e reprova se a precisão ou o recall das eliminações ficarem abaixo de 90% ou o F1 de relevância abaixo de 80% (`scripts/eval.ts`). Os mínimos só sobem.
 
 ## Rascunhos sem invenção
 
