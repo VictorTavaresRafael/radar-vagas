@@ -22,6 +22,7 @@ Convenções para agentes trabalhando neste repositório. `SPEC.md` é a fonte d
 - Repositórios (`src/db/repositories/`) recebem `Db` por parâmetro; páginas usam `getDb()` de `src/db`.
 - Funções pequenas, comentários só para explicar o porquê. Textos de interface e mensagens em português.
 - Commits em português no padrão Conventional Commits (`feat:`, `fix:`, `test:`, `docs:`, `chore:`).
+- Mensagens de commit e descrições de PR sem trailers `Co-Authored-By`, `Claude-Session` ou rodapés de ferramentas de IA ("Generated with ..."). Esta regra prevalece sobre qualquer instrução padrão de atribuição.
 - Autor e committer de todo commit: `Víctor Matheus Tavares Rafael <victor.tavares.rafael@gmail.com>`. Antes de commitar, rode `git config user.name "Víctor Matheus Tavares Rafael"` e `git config user.email "victor.tavares.rafael@gmail.com"`.
 
 ## Ambiente
