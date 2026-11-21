@@ -101,6 +101,25 @@ export function JobFiltersForm({
           ))}
         </select>
       </label>
+      <div className="col-span-2 flex flex-wrap items-center gap-x-4 gap-y-2 sm:col-span-3 lg:col-span-4">
+        <label className="flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400">
+          Ordenar por
+          <select name="sort" defaultValue={filters.sort} className={field}>
+            <option value="score">Score</option>
+            <option value="recentes">Mais recentes</option>
+          </select>
+        </label>
+        <label className="flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400">
+          <input
+            type="checkbox"
+            name="closed"
+            value="1"
+            defaultChecked={filters.closed}
+            className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-700"
+          />
+          Mostrar vagas que sumiram da fonte
+        </label>
+      </div>
       <div className="col-span-2 flex flex-wrap items-end gap-x-3 gap-y-1 sm:col-span-3 lg:col-span-4">
         <button
           type="submit"

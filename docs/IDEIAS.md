@@ -13,22 +13,19 @@ numerados ainda estão pendentes e precisam de decisão sua.
 - Salário mínimo como filtro seu, com piso sugerido pela mediana dos salários divulgados.
 - Faixa "Destaque" na home: score ≥ 70, coletada nos últimos 7 dias, sem candidatura.
 - Vagas já gravadas sem avaliação de LLM são recalculadas a cada coleta.
+- Lista começa com score ≥ 50 e esconde vagas não vistas há 3 dias (relativo à última coleta); os dois dá para desligar no filtro.
+- Ações rápidas na lista (★ Interessante, ✕ Descartar) e ordenação por data.
+- Resumo diário no Telegram na coleta das 07:47 (precisa dos secrets TELEGRAM_BOT_TOKEN e TELEGRAM_CHAT_ID e, opcional, da variable PANEL_URL).
 
 ## Dados
 
 5. **Modalidade pela descrição** continua frágil: "remoto" em benefícios pode marcar uma vaga
    presencial como remota. Com as vagas de vendas fora, o impacto caiu.
-6. **Esconder vagas que sumiram da fonte.** `last_seen_at` já existe. Vaga não vista há 7 dias
-   provavelmente fechou: mostrar etiqueta "pode ter fechado" ou filtrar por padrão.
-7. **Bluelight Consulting com 613 vagas.** Quase todas são a mesma "React Engineer - Remote,
+6. **Bluelight Consulting com 613 vagas.** Quase todas são a mesma "React Engineer - Remote,
    Latin America" em cidades diferentes; a deduplicação junta em uma (`Lever +101`), mas a coleta
    gasta tempo nelas. Ideia: limite de vagas por empresa/fonte por coleta.
 
 ## Painel
-
-8. **Ordenação por data** além de score, e filtro "só novas (24 h)".
-9. **Ações rápidas na lista:** descartar ou marcar "Interessante" sem abrir a vaga.
-10. **Resumo diário no Telegram** com as 5 melhores do dia, mesmo abaixo de 80.
 
 ## Infra
 

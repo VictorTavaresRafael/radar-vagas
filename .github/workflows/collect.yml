@@ -38,3 +38,6 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Resumo diário no Telegram só na coleta da manhã.
+          SEND_DIGEST: ${{ github.event.schedule == '47 10 * * *' && '1' || '' }}
+          PANEL_URL: ${{ vars.PANEL_URL }}

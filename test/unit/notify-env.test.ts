@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { parseEnv } from "@/lib/env";
-import { createTelegramNotifier, formatAlertMessage } from "@/pipeline/notify";
+import { createTelegramNotifier, formatAlertMessage, formatDigestMessage } from "@/pipeline/notify";
 
 const alert = {
   title: "Dev React Pleno",
@@ -49,6 +49,30 @@ describe("alerta do Telegram", () => {
     });
     await notifier.notify([]);
     expect(called).toBe(false);
+  });
+});
+
+describe("resumo diário", () => {
+  it("numera as vagas e termina com o link do painel", () => {
+    expect(formatDigestMessage([alert], "https://painel.example")).toBe(
+      "Radar de Vagas — resumo do dia: melhor vaga das últimas 24 h\n\n1. 93 — Dev React Pleno (ília)\nhttps://example.com/1\n\nPainel: https://painel.example",
+    );
+  });
+
+  it("avisa quando não há vagas, para o silêncio não parecer coleta parada", async () => {
+    const texts: string[] = [];
+    const notifier = createTelegramNotifier({
+      botToken: "t",
+      chatId: "c",
+      fetch: async (_url, init) => {
+        texts.push(JSON.parse(String(init?.body)).text);
+        return new Response("{}");
+      },
+    });
+    await notifier.digest([], null);
+    expect(texts).toEqual([
+      "Radar de Vagas — resumo do dia\n\nNenhuma vaga nova com score bom nas últimas 24 h.",
+    ]);
   });
 });
 

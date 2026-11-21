@@ -1,3 +1,4 @@
+import { scoring } from "@config/scoring";
 import { connection } from "next/server";
 import { Highlights } from "@/components/highlights";
 import { JobFiltersForm } from "@/components/job-filters";
@@ -31,8 +32,8 @@ export default async function HomePage({
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Vagas</h1>
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
-            Ordenadas por score e recência. Score 0 significa eliminada por filtro; abra a vaga para
-            ver o motivo.
+            Por padrão, só score ≥ {scoring.listMinScore} e vagas ainda abertas na fonte. Baixe o
+            score mínimo para ver o resto; score 0 é vaga eliminada (abra para ver o motivo).
           </p>
         </div>
         <p className="text-sm tabular-nums text-zinc-600 dark:text-zinc-400">
