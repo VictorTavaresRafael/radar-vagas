@@ -57,4 +57,8 @@ export const scoring = {
   alertMinScore: 80,
   /** Uma vaga é "nova" no painel durante este intervalo após a primeira coleta. */
   newBadgeHours: 24,
+  evaluation: {
+    /** No eval, score a partir deste valor conta como "vale abrir a vaga". */
+    relevantMinScore: 60,
+  },
 } as const;
