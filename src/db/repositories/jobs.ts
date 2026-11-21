@@ -248,7 +248,10 @@ export async function suggestedSalaryFloor(db: Db): Promise<number | null> {
       and(
         eq(jobs.currency, "BRL"),
         gte(jobs.salaryMin, 1000),
+        // Teto contra anuais e cifras que escaparam do parser ("R$ 500.000").
+        sql`coalesce(${jobs.salaryMax}, ${jobs.salaryMin}) <= 60000`,
         or(isNull(jobs.area), ne(jobs.area, "fora")),
+        or(isNull(jobs.region), eq(jobs.region, "brasil")),
       ),
     );
   if (!row?.median) return null;

@@ -34,6 +34,22 @@ describe("parseSalary", () => {
     expect(parseSalary(text)).toEqual(expected);
   });
 
+  it("em descrição longa, só aceita valor com contexto de salário", () => {
+    const filler =
+      "Somos uma empresa de tecnologia financeira com clientes no país inteiro. ".repeat(4);
+    expect(parseSalary(`${filler}Clientes com patrimônio a partir de R$ 500.000.`)).toBeNull();
+    expect(parseSalary(`${filler}## Salário\n\nR$ 7.000 a R$ 9.000`)).toEqual({
+      min: 7000,
+      max: 9000,
+      currency: "BRL",
+    });
+    expect(parseSalary(`${filler}Oferecemos R$ 6.500 por mês + benefícios.`)).toEqual({
+      min: 6500,
+      max: 6500,
+      currency: "BRL",
+    });
+  });
+
   it("ignora números sem moeda", () => {
     expect(parseSalary("3 dias presenciais, 5+ anos de experiência")).toBeNull();
   });

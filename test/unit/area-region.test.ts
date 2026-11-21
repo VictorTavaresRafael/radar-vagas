@@ -34,6 +34,12 @@ describe("classifyArea", () => {
     "Auxiliar de Atendimento Logístico | CNH A (Moto) | Florianópolis/SC",
     "Renewals Manager - LATAM",
     "Commercial Contracts Specialist - Legal Ops",
+    "Telesales Executive - Argentina",
+    "Grupo QuintoAndar | Sr Strategy Manager",
+    "Grupo QuintoAndar I Sr Revenue and Pricing Management",
+    "[Talent Pool] WEALTH MANAGEMENT - Belo Horizonte",
+    "Grupo QuintoAndar | Growth Marketing Specialist",
+    "Analista de Planejamento e Performance Sênior (vaga afirmativa PCD)",
   ])("fora: %s", (title) => {
     expect(classifyArea(title)).toBe("fora");
   });

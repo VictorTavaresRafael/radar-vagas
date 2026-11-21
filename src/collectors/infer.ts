@@ -88,11 +88,29 @@ function parseAmount(raw: string, suffix: string | undefined, currency: Currency
   return suffix ? value * 1000 : value;
 }
 
+/**
+ * Em texto longo (descrição), o valor só conta como salário perto de uma palavra que diga
+ * isso. Sem esse contexto, "patrimônio a partir de R$ 500.000" virava salário.
+ */
+const SALARY_BEFORE =
+  /(sal[aá]ri|remunera|faixa|compensa|salary|pay|pagamento|bolsa|ganho|ordenado|vencimento|pretens|budget|rate|valor)[\s\S]{0,60}$/i;
+const SALARY_AFTER =
+  /^\s*(\/|por\b|per\b|mensa|monthly|month|anua|annual|year|yr|ano\b|hora|hour|hr\b|bruto|brutos|liquido|líquido|clt|pj|\+\s*benef)/i;
+const SHORT_TEXT = 200;
+
 function matchRange(text: string, regex: RegExp, currency: Currency): SalaryRange | null {
+  const needsContext = text.length > SHORT_TEXT;
   for (const match of text.matchAll(regex)) {
     if (!match[1]) continue;
-    const after = text.slice((match.index ?? 0) + match[0].length);
+    const start = match.index ?? 0;
+    const after = text.slice(start + match[0].length);
     if (MAGNITUDE_AFTER.test(after)) continue;
+    if (
+      needsContext &&
+      !SALARY_BEFORE.test(text.slice(Math.max(0, start - 80), start)) &&
+      !SALARY_AFTER.test(after)
+    )
+      continue;
     const min = parseAmount(match[1], match[2], currency);
     const max = match[3] ? parseAmount(match[3], match[4] ?? match[2], currency) : min;
     if (!Number.isFinite(min) || min < MIN_PLAUSIBLE_SALARY) continue;
