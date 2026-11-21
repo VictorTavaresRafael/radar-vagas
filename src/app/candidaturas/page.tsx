@@ -45,11 +45,21 @@ export default async function ApplicationsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Candidaturas</h1>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          Mova a vaga de coluna pelo seletor. Próximos passos vencidos aparecem em vermelho.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Candidaturas</h1>
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+            Mova a vaga de coluna pelo seletor. Próximos passos vencidos aparecem em vermelho.
+          </p>
+        </div>
+        {/* Link comum (não <Link>): é um download, não uma navegação do app. */}
+        <a
+          href="/candidaturas/export"
+          download
+          className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+        >
+          Exportar CSV
+        </a>
       </div>
       <div className="grid gap-4 md:grid-cols-3 xl:grid-cols-5">
         {KANBAN_STATUSES.map((status) => {
