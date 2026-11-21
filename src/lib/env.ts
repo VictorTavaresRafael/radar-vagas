@@ -15,6 +15,21 @@ const envSchema = z.object({
   TELEGRAM_CHAT_ID: optionalString,
   GITHUB_TOKEN: optionalString,
   DASHBOARD_PASSWORD: optionalString,
+  // A Vercel define VERCEL=1 no build e nas funções.
+  VERCEL: optionalString,
+});
+
+/**
+ * Publicado na Vercel, o painel precisa do Postgres (o PGlite gravaria num disco
+ * efêmero) e de senha (sem ela, qualquer um com a URL veria e mudaria os dados).
+ */
+const deployedEnvSchema = envSchema.superRefine((env, context) => {
+  if (!env.VERCEL) return;
+  for (const key of ["DATABASE_URL", "DASHBOARD_PASSWORD"] as const) {
+    if (!env[key]) {
+      context.addIssue({ code: "custom", path: [key], message: "obrigatória na Vercel" });
+    }
+  }
 });
 
 export type Env = z.infer<typeof envSchema>;
@@ -30,7 +45,7 @@ function dropEmpty(source: Record<string, string | undefined>): Record<string, s
 }
 
 export function parseEnv(source: Record<string, string | undefined>): Env {
-  const result = envSchema.safeParse(dropEmpty(source));
+  const result = deployedEnvSchema.safeParse(dropEmpty(source));
   if (!result.success) {
     const issues = result.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`);
     throw new Error(`Variáveis de ambiente inválidas:\n${issues.join("\n")}`);
