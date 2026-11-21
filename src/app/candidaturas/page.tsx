@@ -5,13 +5,14 @@ import { ScoreBadge } from "@/components/score-badge";
 import { StatusForm } from "@/components/status-form";
 import { getDb } from "@/db";
 import { type KanbanCard, listKanbanCards } from "@/db/repositories/applications";
+import { followUpState, overdueItems } from "@/domain/followup";
 import { KANBAN_STATUSES, STATUS_LABELS } from "@/domain/status";
 import { formatDate } from "@/lib/dates";
 
 export const metadata: Metadata = { title: "Candidaturas" };
 
 function Card({ card, now }: { card: KanbanCard; now: Date }) {
-  const overdue = card.nextStepAt !== null && card.nextStepAt < now;
+  const state = followUpState(card.status, card.nextStepAt, now);
   return (
     <li className="space-y-2 rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
       <Link href={`/vagas/${card.jobId}`} className="flex items-start gap-2 hover:underline">
@@ -23,10 +24,16 @@ function Card({ card, now }: { card: KanbanCard; now: Date }) {
       </Link>
       {card.nextStep && (
         <p
-          className={`text-xs ${overdue ? "font-medium text-rose-600" : "text-zinc-600 dark:text-zinc-400"}`}
+          className={`text-xs ${state === "atrasado" ? "font-medium text-rose-600" : "text-zinc-600 dark:text-zinc-400"}`}
         >
+          {state === "atrasado" && "Atrasado · "}
           Próximo: {card.nextStep}
           {card.nextStepAt ? ` (${formatDate(card.nextStepAt)})` : ""}
+          {state === "hoje" && (
+            <span className="ml-1 rounded bg-amber-100 px-1.5 py-0.5 font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
+              hoje
+            </span>
+          )}
         </p>
       )}
       {card.appliedAt && (
@@ -42,6 +49,7 @@ export default async function ApplicationsPage() {
   await connection();
   const cards = await listKanbanCards(await getDb(), KANBAN_STATUSES);
   const now = new Date();
+  const overdue = overdueItems(cards, now);
 
   return (
     <div className="space-y-6">
@@ -49,7 +57,8 @@ export default async function ApplicationsPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Candidaturas</h1>
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
-            Mova a vaga de coluna pelo seletor. Próximos passos vencidos aparecem em vermelho.
+            Mova a vaga de coluna pelo seletor. Próximos passos vencidos aparecem em vermelho e no
+            topo.
           </p>
         </div>
         {/* Link comum (não <Link>): é um download, não uma navegação do app. */}
@@ -61,6 +70,26 @@ export default async function ApplicationsPage() {
           Exportar CSV
         </a>
       </div>
+      {overdue.length > 0 && (
+        <section className="rounded-xl border border-rose-200 bg-rose-50 p-4 dark:border-rose-900 dark:bg-rose-950/40">
+          <h2 className="mb-2 text-sm font-semibold text-rose-700 dark:text-rose-300">
+            Atrasadas ({overdue.length})
+          </h2>
+          <ul className="space-y-1 text-sm">
+            {overdue.map((card) => (
+              <li key={card.jobId}>
+                <Link href={`/vagas/${card.jobId}`} className="hover:underline">
+                  <span className="font-medium">{card.company}</span> · {card.title}
+                </Link>
+                <span className="text-zinc-600 dark:text-zinc-400">
+                  {" "}
+                  — {card.nextStep || "próximo passo"} em {formatDate(card.nextStepAt)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
       <div className="grid gap-4 md:grid-cols-3 xl:grid-cols-5">
         {KANBAN_STATUSES.map((status) => {
           const column = cards.filter((card) => card.status === status);
