@@ -70,6 +70,19 @@ describe("score determinístico", () => {
     expect(await points(45)).toBe(0);
   });
 
+  it("zera a stack quando o framework exigido está fora do perfil e não há React", async () => {
+    const stack = async (description: string) =>
+      component(await scoreJob(makeJob({ description }), context, null), "stack");
+    const vue = await stack("Requisitos\n- Vue.js 3 e TypeScript");
+    expect(vue?.points).toBe(0);
+    expect(vue?.reason).toBe("Framework principal fora do perfil: Vue, sem React/Next.js.");
+    expect((await stack("Requisitos\n- React e TypeScript\nDiferenciais\n- Vue.js"))?.points).toBe(
+      18,
+    );
+    // Angular está nos fatos do perfil (TCC), então não conta como fora do perfil.
+    expect((await stack("Requisitos\n- Angular e TypeScript"))?.points).toBe(8);
+  });
+
   it("vaga eliminada tem score 0, mas mantém o breakdown para o painel", async () => {
     const result = await scoreJob(makeJob({ title: "Desenvolvedor Java Pleno" }), context, null);
     expect(result.score).toBe(0);

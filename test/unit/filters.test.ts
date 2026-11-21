@@ -75,6 +75,16 @@ describe("filtros eliminatórios", () => {
     expect(rules(bonus)).toEqual([]);
   });
 
+  it("elimina híbrido fora das cidades aceitas e mantém Londrina", () => {
+    const curitiba = makeJob({ modality: "hibrido", location: "Curitiba, PR" });
+    const londrina = makeJob({ modality: "hibrido", location: "Londrina, PR" });
+    expect(rules(curitiba)).toEqual(["presencial"]);
+    expect(findEliminations(curitiba, makeContext())[0]?.reason).toBe(
+      "Híbrido fora das cidades aceitas (Curitiba, PR).",
+    );
+    expect(rules(londrina)).toEqual([]);
+  });
+
   it("elimina presencial fora das cidades aceitas e mantém Londrina e Bauru", () => {
     const campinas = makeJob({ modality: "presencial", location: "Campinas, SP" });
     const unknown = makeJob({ modality: "presencial", location: null });

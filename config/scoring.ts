@@ -22,6 +22,13 @@ export const scoring = {
     },
     { label: "AWS", techs: ["AWS", "AWS Amplify", "S3", "Lambda"], weight: 3 },
   ] satisfies readonly StackWeight[],
+  /**
+   * Frameworks de front-end que, exigidos sem React/Next.js na vaga, indicam stack principal
+   * fora do perfil: a stack zera. Os que o perfil já cita (ex.: Angular) são ignorados.
+   */
+  offProfileFrameworks: ["Angular", "Vue", "Svelte"] satisfies TechName[],
+  /** Tecnologias cuja presença na vaga mantém a stack dentro do perfil. */
+  coreFrameworks: ["React", "React Native", "Next.js"] satisfies TechName[],
   seniority: { max: 20, pleno: 20, juniorPleno: 15, unknown: 12, junior: 8, senior: 5 },
   modality: {
     max: 20,

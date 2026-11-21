@@ -1,17 +1,52 @@
 import { scoring } from "@config/scoring";
 import { isBrazilLocation, isJuniorPleno } from "@/collectors/infer";
 import type { NormalizedJob } from "@/domain/job";
-import { findTechnologies } from "@/domain/tech-catalog";
+import { profileTechnologies } from "@/domain/profile";
+import { findTechnologies, type TechName } from "@/domain/tech-catalog";
 import { isInAcceptedCity } from "./filters";
+import { classifyLines } from "./sections";
 import type { ScoreComponent, ScoreContext } from "./types";
 
 const DAY_MS = 86_400_000;
 
-function stackComponent(job: NormalizedJob): ScoreComponent {
+/** Framework exigido que o perfil não tem, quando a vaga não cita nenhum framework do perfil. */
+function offProfileFrameworks(
+  job: NormalizedJob,
+  techs: ReadonlySet<TechName>,
+  context: ScoreContext,
+): TechName[] {
+  const core: readonly TechName[] = scoring.coreFrameworks;
+  if (core.some((tech) => techs.has(tech))) return [];
+  const known = profileTechnologies(context.profile);
+  const candidates = new Set<TechName>(
+    scoring.offProfileFrameworks.filter((tech) => !known.has(tech)),
+  );
+  const required = new Set(
+    [
+      job.title,
+      ...classifyLines(job.description)
+        .filter((line) => line.context === "required")
+        .map((line) => line.text),
+    ].flatMap((text) => findTechnologies(text)),
+  );
+  return [...candidates].filter((tech) => required.has(tech));
+}
+
+function stackComponent(job: NormalizedJob, context: ScoreContext): ScoreComponent {
   const techs = new Set(findTechnologies(`${job.title}\n${job.description}`));
   const hits = scoring.stack.filter((item) => item.techs.some((tech) => techs.has(tech)));
   const misses = scoring.stack.filter((item) => !hits.includes(item));
   const max = scoring.stack.reduce((sum, item) => sum + item.weight, 0);
+  const outside = offProfileFrameworks(job, techs, context);
+  if (outside.length > 0) {
+    return {
+      key: "stack",
+      label: "Stack",
+      points: 0,
+      max,
+      reason: `Framework principal fora do perfil: ${outside.join(", ")}, sem React/Next.js.`,
+    };
+  }
   const points = hits.reduce((sum, item) => sum + item.weight, 0);
   const found = hits.map((item) => `${item.label} (+${item.weight})`).join(", ") || "nenhuma";
   const absent = misses.map((item) => item.label).join(", ");
@@ -126,7 +161,7 @@ export function deterministicComponents(
   context: ScoreContext,
 ): ScoreComponent[] {
   return [
-    stackComponent(job),
+    stackComponent(job, context),
     seniorityComponent(job),
     modalityComponent(job, context),
     salaryComponent(job, context),
