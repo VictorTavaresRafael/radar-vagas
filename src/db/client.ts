@@ -34,9 +34,10 @@ export function createPgliteDb(dataDir?: string): DbHandle {
   };
 }
 
-export function createPostgresDb(url: string): DbHandle {
-  // `prepare: false` é exigido pelo pooler de transações do Supabase.
-  const client = postgres(url, { prepare: false, max: 5 });
+export function createPostgresDb(url: string, serverless = false): DbHandle {
+  // `prepare: false` é exigido pelo pooler de transações do Supabase. Em função
+  // serverless, cada instância abre uma conexão só, para não esgotar o pooler.
+  const client = postgres(url, { prepare: false, max: serverless ? 1 : 5 });
   const db = drizzlePostgres(client, { schema });
   return {
     db,
@@ -49,10 +50,11 @@ export function createPostgresDb(url: string): DbHandle {
 export interface DbEnv {
   readonly DATABASE_URL?: string | undefined;
   readonly PGLITE_DATA_DIR: string;
+  readonly VERCEL?: string | undefined;
 }
 
 export function createDbFromEnv(env: DbEnv): DbHandle {
   return env.DATABASE_URL
-    ? createPostgresDb(env.DATABASE_URL)
+    ? createPostgresDb(env.DATABASE_URL, Boolean(env.VERCEL))
     : createPgliteDb(env.PGLITE_DATA_DIR);
 }

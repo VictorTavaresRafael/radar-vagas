@@ -29,6 +29,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             >
               Candidaturas
             </Link>
+            <Link
+              href="/metricas"
+              className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+            >
+              Métricas
+            </Link>
           </nav>
         </header>
         <main className="mx-auto max-w-6xl px-4 py-6">{children}</main>
