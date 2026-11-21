@@ -1,8 +1,11 @@
 import { z } from "zod";
 import { MODALITIES, SOURCES } from "./job";
+import { REGIONS } from "./region";
 import { JOB_STATUSES } from "./status";
 
 export const ALL_STATUSES = "todas";
+/** Tudo menos Brasil: o "mundo" do filtro de região. */
+export const ABROAD = "exterior";
 
 const firstValue = (value: unknown): unknown => (Array.isArray(value) ? value[0] : value);
 const emptyToUndefined = (value: unknown): unknown => {
@@ -29,6 +32,18 @@ export const jobFiltersSchema = z.object({
       .catch(undefined),
   ),
   q: z.preprocess(emptyToUndefined, z.string().trim().max(100).optional().catch(undefined)),
+  region: z.preprocess(
+    emptyToUndefined,
+    z
+      .enum([...REGIONS, ABROAD])
+      .optional()
+      .catch(undefined),
+  ),
+  /** Salário mínimo mensal em reais definido por você; vagas em reais abaixo dele saem. */
+  minSalary: z.preprocess(
+    emptyToUndefined,
+    z.coerce.number().int().min(0).max(1_000_000).optional().catch(undefined),
+  ),
   page: z.preprocess(
     emptyToUndefined,
     z.coerce.number().int().min(1).max(1000).catch(1).default(1),
@@ -46,6 +61,8 @@ export function filtersToQuery(filters: JobFilters, page: number): string {
   if (filters.source) params.set("source", filters.source);
   if (filters.modality) params.set("modality", filters.modality);
   if (filters.status) params.set("status", filters.status);
+  if (filters.region) params.set("region", filters.region);
+  if (filters.minSalary) params.set("minSalary", String(filters.minSalary));
   if (page > 1) params.set("page", String(page));
   const query = params.toString();
   return query ? `?${query}` : "";

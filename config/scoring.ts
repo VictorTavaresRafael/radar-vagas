@@ -62,6 +62,8 @@ export const scoring = {
   defaultLlmWeight: 0.3,
   /** Score mínimo para o alerta do Telegram. */
   alertMinScore: 80,
+  /** Faixa "Destaque" da home: melhores matches recentes ainda não trabalhados. */
+  highlight: { minScore: 70, maxAgeDays: 7, limit: 3 },
   /** Uma vaga é "nova" no painel durante este intervalo após a primeira coleta. */
   newBadgeHours: 24,
   evaluation: {

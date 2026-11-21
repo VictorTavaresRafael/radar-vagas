@@ -9,7 +9,9 @@ import {
   uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
+import type { JobArea } from "@/domain/area";
 import type { Contract, Currency, Modality, Seniority, SourceId } from "@/domain/job";
+import type { Region } from "@/domain/region";
 import type { JobStatus } from "@/domain/status";
 import type { DraftKind } from "@/drafts/kinds";
 import type { Violation } from "@/drafts/verify";
@@ -45,11 +47,15 @@ export const jobs = pgTable(
     scoreBreakdown: jsonb("score_breakdown").$type<ScoreBreakdown>().notNull(),
     status: text("status").$type<JobStatus>().notNull().default("nova"),
     notes: text("notes").notNull().default(""),
+    // Derivados do título e do local na coleta; vagas antigas são preenchidas na coleta seguinte.
+    area: text("area").$type<JobArea>(),
+    region: text("region").$type<Region>(),
   },
   (table) => [
     uniqueIndex("jobs_source_external_id_idx").on(table.source, table.externalId),
     index("jobs_score_idx").on(table.score),
     index("jobs_status_idx").on(table.status),
+    index("jobs_region_idx").on(table.region),
   ],
 );
 

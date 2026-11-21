@@ -1,7 +1,13 @@
 import type { Profile } from "@/domain/profile";
 import type { TechName } from "@/domain/tech-catalog";
 
-export type EliminationRule = "linguagem" | "senioridade" | "ingles" | "presencial" | "salario";
+export type EliminationRule =
+  | "linguagem"
+  | "senioridade"
+  | "ingles"
+  | "presencial"
+  | "salario"
+  | "area";
 
 export interface Elimination {
   readonly rule: EliminationRule;

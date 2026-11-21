@@ -69,7 +69,10 @@ async function persistJob(deps: CollectDeps, job: MergedJob): Promise<PersistOut
   const { db, scoreContext } = deps;
   const existing = await findExistingJob(db, job);
   if (existing) {
-    await markJobSeen(db, existing, job, scoreContext.now);
+    // Sem avaliação de LLM gravada, recalcular é barato e leva correções às vagas antigas.
+    // Com LLM, o score fica como está para não repetir a chamada.
+    const rescored = existing.scoreBreakdown.llm ? null : await scoreJob(job, scoreContext, null);
+    await markJobSeen(db, existing, job, scoreContext.now, rescored);
     return { inserted: null, alert: null };
   }
   // O score é calculado só na primeira vez que a vaga aparece, para não repetir chamadas de LLM.

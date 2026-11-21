@@ -180,6 +180,33 @@ describe("npm run collect (pipeline)", () => {
     );
     expect(github.every((job) => job.source === "github")).toBe(true);
   });
+
+  it("filtra por região e salário sem esconder vagas sem salário", async () => {
+    await runCollect(deps());
+    const everything = await listJobs(handle.db, all);
+    const abroad = await listJobs(
+      handle.db,
+      parseJobFilters({ region: "exterior", status: "todas" }),
+    );
+    expect(abroad.length).toBeGreaterThan(0);
+    expect(abroad.every((job) => job.region !== null && job.region !== "brasil")).toBe(true);
+    const brazil = await listJobs(
+      handle.db,
+      parseJobFilters({ region: "brasil", status: "todas" }),
+    );
+    expect(brazil.every((job) => job.region === "brasil")).toBe(true);
+
+    const floor = 9000;
+    const filtered = await listJobs(
+      handle.db,
+      parseJobFilters({ minSalary: String(floor), status: "todas" }),
+    );
+    const belowFloor = (job: (typeof everything)[number]) =>
+      job.currency === "BRL" && (job.salaryMax ?? job.salaryMin ?? Infinity) < floor;
+    expect(filtered.some(belowFloor)).toBe(false);
+    expect(filtered.some((job) => job.salaryMin === null)).toBe(true);
+    expect(filtered).toHaveLength(everything.filter((job) => !belowFloor(job)).length);
+  });
 });
 
 describe("candidaturas", () => {

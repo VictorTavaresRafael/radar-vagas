@@ -1,4 +1,5 @@
 import { scoring } from "@config/scoring";
+import { classifyArea } from "@/domain/area";
 import type { NormalizedJob } from "@/domain/job";
 import { type Profile, profileTechnologies } from "@/domain/profile";
 import { findTechnologies, type TechName } from "@/domain/tech-catalog";
@@ -67,6 +68,12 @@ const formatBrl = (value: number): string => `R$ ${value.toLocaleString("pt-BR")
 /** Motivos que zeram o score. Lista vazia significa que a vaga segue para a pontuação. */
 export function findEliminations(job: NormalizedJob, context: ScoreContext): Elimination[] {
   const eliminations: Elimination[] = [];
+  if (classifyArea(job.title) === "fora") {
+    eliminations.push({
+      rule: "area",
+      reason: "Vaga fora de tecnologia (vendas, atendimento, jurídico, RH, administrativo...).",
+    });
+  }
   const languages = requiredForbiddenLanguages(job, context.profile);
   if (languages.length > 0) {
     eliminations.push({
