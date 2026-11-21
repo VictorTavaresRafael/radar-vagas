@@ -56,14 +56,14 @@ async function applicationCount(db: Db): Promise<number> {
 }
 
 export async function getSearchMetrics(db: Db, now: Date, days = 30): Promise<SearchMetrics> {
-  const [perDay, nova, candidatado, entrevista, oferta, responded] = await Promise.all([
-    newJobsPerDay(db, now, days),
-    total(db),
-    applicationCount(db),
-    reached(db, ["entrevista", "oferta"]),
-    reached(db, ["oferta"]),
-    reached(db, ["entrevista", "oferta", "recusado"]),
-  ]);
+  // Em sequência de propósito: na Vercel há uma conexão só, pelo pooler de transações do
+  // Supabase, e consultas simultâneas nela travavam a página até o timeout de 300 s.
+  const perDay = await newJobsPerDay(db, now, days);
+  const nova = await total(db);
+  const candidatado = await applicationCount(db);
+  const entrevista = await reached(db, ["entrevista", "oferta"]);
+  const oferta = await reached(db, ["oferta"]);
+  const responded = await reached(db, ["entrevista", "oferta", "recusado"]);
   return {
     newJobsPerDay: perDay,
     funnel: buildFunnel({ nova, candidatado, entrevista, oferta }),

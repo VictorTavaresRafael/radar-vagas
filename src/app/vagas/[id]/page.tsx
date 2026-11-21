@@ -1,6 +1,7 @@
 import { profile } from "@config/profile";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { cache } from "react";
 import { z } from "zod";
 import { saveNotesAction } from "@/app/actions";
 import { ApplicationForm } from "@/components/application-form";
@@ -26,10 +27,15 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
+// `cache` faz a metadata e a página dividirem uma consulta só, em vez de duas simultâneas.
+const findJob = cache(async (id: string): Promise<JobRow | undefined> => {
+  const parsed = z.uuid().safeParse(id);
+  return parsed.success ? getJob(await getDb(), parsed.data) : undefined;
+});
+
 async function loadJob(params: PageProps["params"]): Promise<JobRow> {
   const { id } = await params;
-  const parsed = z.uuid().safeParse(id);
-  const job = parsed.success ? await getJob(await getDb(), parsed.data) : undefined;
+  const job = await findJob(id);
   if (!job) notFound();
   return job;
 }
@@ -54,12 +60,11 @@ function describeEvent(event: EventRow): string {
 export default async function JobPage({ params }: PageProps) {
   const job = await loadJob(params);
   const db = await getDb();
-  const [application, history, drafts, draftHistory] = await Promise.all([
-    getApplication(db, job.id),
-    listJobEvents(db, job.id),
-    generateDrafts(job, profile, null),
-    listDraftGenerations(db, job.id),
-  ]);
+  // Consultas em sequência: veja getSearchMetrics.
+  const application = await getApplication(db, job.id);
+  const history = await listJobEvents(db, job.id);
+  const draftHistory = await listDraftGenerations(db, job.id);
+  const drafts = await generateDrafts(job, profile, null);
   const salary = formatSalary(job.salaryMin, job.salaryMax, job.currency);
   const facts = [
     job.location,

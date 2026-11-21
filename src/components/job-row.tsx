@@ -16,6 +16,8 @@ export function JobRow({ job, now }: { job: JobListItem; now: Date }) {
   return (
     <li>
       <Link
+        // Sem prefetch: a lista tem até 200 vagas e cada uma abriria uma função com consulta ao banco.
+        prefetch={false}
         href={`/vagas/${job.id}`}
         className="flex items-start gap-4 rounded-lg border border-zinc-200 bg-white p-4 transition hover:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-600"
       >
