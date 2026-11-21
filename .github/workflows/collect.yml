@@ -2,9 +2,10 @@ name: Coleta de vagas
 
 on:
   schedule:
-    # 08:00 e 18:00 em Brasília (UTC-3). O GitHub pode atrasar execuções agendadas em alguns minutos.
-    - cron: "0 11 * * *"
-    - cron: "0 21 * * *"
+    # 07:47 e 17:47 em Brasília (UTC-3). Fora da hora cheia de propósito: é quando o GitHub
+    # tem mais fila e costuma atrasar ou pular execuções agendadas.
+    - cron: "47 10 * * *"
+    - cron: "47 20 * * *"
   workflow_dispatch:
 
 permissions:

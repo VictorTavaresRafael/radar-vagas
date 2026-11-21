@@ -186,7 +186,7 @@ Só APIs públicas documentadas: scraping de HTML está fora do escopo de propó
 ## Deploy
 
 1. Crie um projeto no Supabase e copie a connection string do pooler para o secret `DATABASE_URL`.
-2. O workflow `.github/workflows/collect.yml` roda `npm run collect` às 08:00 e 18:00 (horário de Brasília). Ele aplica as migrações antes de coletar. Também pode ser disparado manualmente em _Actions → Coleta de vagas → Run workflow_.
+2. O workflow `.github/workflows/collect.yml` roda `npm run collect` às 07:47 e 17:47 (horário de Brasília; fora da hora cheia, quando o GitHub mais atrasa ou pula agendamentos). Ele aplica as migrações antes de coletar. Também pode ser disparado manualmente em _Actions → Coleta de vagas → Run workflow_.
 3. O painel pode rodar localmente apontando para o mesmo `DATABASE_URL`, ou ser publicado na Vercel (abaixo).
 
 ### Painel na Vercel
