@@ -1,4 +1,5 @@
 import { profile } from "@config/profile";
+import { eq } from "drizzle-orm";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { buildCollectors } from "@/collectors";
 import type { Collector } from "@/collectors/types";
@@ -10,6 +11,7 @@ import {
   listKanbanCards,
 } from "@/db/repositories/applications";
 import { getJob, listJobs } from "@/db/repositories/jobs";
+import { jobs } from "@/db/schema";
 import { parseJobFilters } from "@/domain/filters";
 import type { NormalizedJob } from "@/domain/job";
 import { type CollectDeps, runCollect } from "@/pipeline/collect";
@@ -31,7 +33,7 @@ afterEach(async () => {
 
 function recordingNotifier(): Notifier & { sent: AlertJob[][] } {
   const sent: AlertJob[][] = [];
-  return { sent, notify: async (jobs) => void sent.push([...jobs]) };
+  return { sent, notify: async (jobs) => void sent.push([...jobs]), digest: async () => {} };
 }
 
 function deps(overrides: Partial<CollectDeps> = {}): CollectDeps {
@@ -46,7 +48,7 @@ function deps(overrides: Partial<CollectDeps> = {}): CollectDeps {
   };
 }
 
-const all = parseJobFilters({ status: "todas" });
+const all = parseJobFilters({ status: "todas", minScore: "0" });
 
 describe("npm run collect (pipeline)", () => {
   it("coleta todas as fontes, deduplica, pontua e grava", async () => {
@@ -172,13 +174,41 @@ describe("npm run collect (pipeline)", () => {
     );
     expect(remote.length).toBeGreaterThan(0);
     expect(remote.every((job) => job.modality === "remoto" && job.score >= 60)).toBe(true);
-    const search = await listJobs(handle.db, parseJobFilters({ q: "nestjs", status: "todas" }));
+    const search = await listJobs(
+      handle.db,
+      parseJobFilters({ q: "nestjs", status: "todas", minScore: "0" }),
+    );
     expect(search.map((job) => job.company)).toEqual(expect.arrayContaining(["LogiTrack", "CI&T"]));
     const github = await listJobs(
       handle.db,
-      parseJobFilters({ source: "github", status: "todas" }),
+      parseJobFilters({ source: "github", status: "todas", minScore: "0" }),
     );
     expect(github.every((job) => job.source === "github")).toBe(true);
+  });
+
+  it("esconde vagas que sumiram da fonte, a menos que pedido", async () => {
+    await runCollect(deps());
+    const [first] = await listJobs(handle.db, all);
+    if (!first) throw new Error("nenhuma vaga gravada");
+    const old = new Date(FIXTURE_NOW.getTime() - 10 * 24 * 60 * 60 * 1000);
+    await handle.db.update(jobs).set({ lastSeenAt: old }).where(eq(jobs.id, first.id));
+
+    const visible = await listJobs(handle.db, parseJobFilters({ status: "todas", minScore: "0" }));
+    expect(visible.some((job) => job.id === first.id)).toBe(false);
+    const withClosed = await listJobs(
+      handle.db,
+      parseJobFilters({ status: "todas", minScore: "0", closed: "1" }),
+    );
+    expect(withClosed.some((job) => job.id === first.id)).toBe(true);
+  });
+
+  it("começa escondendo score abaixo de 50 e ordena por data quando pedido", async () => {
+    await runCollect(deps());
+    const standard = await listJobs(handle.db, parseJobFilters({}));
+    expect(standard.every((job) => job.score >= 50)).toBe(true);
+    const recent = await listJobs(handle.db, parseJobFilters({ minScore: "0", sort: "recentes" }));
+    const seen = recent.map((job) => job.firstSeenAt.getTime());
+    expect(seen).toEqual([...seen].sort((a, b) => b - a));
   });
 
   it("filtra por região e salário sem esconder vagas sem salário", async () => {
@@ -186,20 +216,20 @@ describe("npm run collect (pipeline)", () => {
     const everything = await listJobs(handle.db, all);
     const abroad = await listJobs(
       handle.db,
-      parseJobFilters({ region: "exterior", status: "todas" }),
+      parseJobFilters({ region: "exterior", status: "todas", minScore: "0" }),
     );
     expect(abroad.length).toBeGreaterThan(0);
     expect(abroad.every((job) => job.region !== null && job.region !== "brasil")).toBe(true);
     const brazil = await listJobs(
       handle.db,
-      parseJobFilters({ region: "brasil", status: "todas" }),
+      parseJobFilters({ region: "brasil", status: "todas", minScore: "0" }),
     );
     expect(brazil.every((job) => job.region === "brasil")).toBe(true);
 
     const floor = 9000;
     const filtered = await listJobs(
       handle.db,
-      parseJobFilters({ minSalary: String(floor), status: "todas" }),
+      parseJobFilters({ minSalary: String(floor), status: "todas", minScore: "0" }),
     );
     const belowFloor = (job: (typeof everything)[number]) =>
       job.currency === "BRL" && (job.salaryMax ?? job.salaryMin ?? Infinity) < floor;

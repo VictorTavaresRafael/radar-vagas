@@ -62,6 +62,15 @@ export const scoring = {
   defaultLlmWeight: 0.3,
   /** Score mínimo para o alerta do Telegram. */
   alertMinScore: 80,
+  /** A lista começa escondendo vagas abaixo deste score; o filtro deixa baixar até 0. */
+  listMinScore: 50,
+  /**
+   * Vaga não vista há mais que isto, contando da coleta mais recente, provavelmente fechou
+   * e sai da lista (dá para mostrar de novo no filtro).
+   */
+  staleAfterDays: 3,
+  /** Resumo diário no Telegram: as melhores vagas coletadas nas últimas 24 h. */
+  digest: { minScore: 50, limit: 5 },
   /** Faixa "Destaque" da home: melhores matches recentes ainda não trabalhados. */
   highlight: { minScore: 70, maxAgeDays: 7, limit: 3 },
   /** Uma vaga é "nova" no painel durante este intervalo após a primeira coleta. */

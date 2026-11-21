@@ -136,6 +136,7 @@ export type JobListItem = Pick<
   | "status"
   | "altUrls"
   | "region"
+  | "url"
 >;
 
 function escapeLike(value: string): string {
@@ -160,6 +161,12 @@ function filterConditions(filters: JobFilters): SQL[] {
     );
   }
   if (filters.minScore > 0) conditions.push(gte(jobs.score, filters.minScore));
+  if (!filters.closed) {
+    // Relativo à coleta mais recente: se a coleta parar, a lista não esvazia sozinha.
+    conditions.push(
+      sql`${jobs.lastSeenAt} >= (select max(j.last_seen_at) from jobs j) - make_interval(days => ${scoring.staleAfterDays})`,
+    );
+  }
   if (filters.source) conditions.push(eq(jobs.source, filters.source));
   if (filters.modality) conditions.push(eq(jobs.modality, filters.modality));
   if (!filters.status) conditions.push(ne(jobs.status, "descartada"));
@@ -194,6 +201,7 @@ const listColumns = {
   status: jobs.status,
   altUrls: jobs.altUrls,
   region: jobs.region,
+  url: jobs.url,
 };
 
 export function listJobs(db: Db, filters: JobFilters): Promise<JobListItem[]> {
@@ -201,7 +209,12 @@ export function listJobs(db: Db, filters: JobFilters): Promise<JobListItem[]> {
     .select(listColumns)
     .from(jobs)
     .where(and(...filterConditions(filters)))
-    .orderBy(desc(jobs.score), desc(jobs.firstSeenAt), desc(jobs.id))
+    .orderBy(
+      ...(filters.sort === "recentes"
+        ? [desc(jobs.firstSeenAt), desc(jobs.score)]
+        : [desc(jobs.score), desc(jobs.firstSeenAt)]),
+      desc(jobs.id),
+    )
     .limit(PAGE_SIZE)
     .offset((filters.page - 1) * PAGE_SIZE);
 }
@@ -212,6 +225,24 @@ export async function countJobs(db: Db, filters: JobFilters): Promise<number> {
     .from(jobs)
     .where(and(...filterConditions(filters)));
   return row?.total ?? 0;
+}
+
+/** Melhores vagas coletadas nas últimas 24 h, para o resumo diário. */
+export function listDigestJobs(db: Db, now: Date): Promise<JobListItem[]> {
+  const since = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  return db
+    .select(listColumns)
+    .from(jobs)
+    .where(
+      and(
+        or(isNull(jobs.area), ne(jobs.area, "fora")),
+        gte(jobs.score, scoring.digest.minScore),
+        gte(jobs.firstSeenAt, since),
+        eq(jobs.status, "nova"),
+      ),
+    )
+    .orderBy(desc(jobs.score), desc(jobs.firstSeenAt))
+    .limit(scoring.digest.limit);
 }
 
 /** Melhores matches recentes, para a faixa de destaque da home (respeita os filtros). */

@@ -14,6 +14,10 @@ const envSchema = z.object({
   TELEGRAM_BOT_TOKEN: optionalString,
   TELEGRAM_CHAT_ID: optionalString,
   GITHUB_TOKEN: optionalString,
+  /** "1" na coleta da manhã: envia o resumo diário no Telegram. */
+  SEND_DIGEST: optionalString,
+  /** URL do painel publicado, para o link no fim do resumo. */
+  PANEL_URL: optionalString,
   // A Vercel define VERCEL=1 no build e nas funções.
   VERCEL: optionalString,
   // O GitHub Actions define GITHUB_ACTIONS=true em todo job.

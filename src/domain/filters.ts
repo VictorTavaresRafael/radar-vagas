@@ -1,3 +1,4 @@
+import { scoring } from "@config/scoring";
 import { z } from "zod";
 import { MODALITIES, SOURCES } from "./job";
 import { REGIONS } from "./region";
@@ -20,7 +21,23 @@ const emptyToUndefined = (value: unknown): unknown => {
 export const jobFiltersSchema = z.object({
   minScore: z.preprocess(
     emptyToUndefined,
-    z.coerce.number().int().min(0).max(100).catch(0).default(0),
+    z.coerce
+      .number()
+      .int()
+      .min(0)
+      .max(100)
+      .catch(scoring.listMinScore)
+      .default(scoring.listMinScore),
+  ),
+  /** "score" (padrão) ou "recentes": primeiro as coletadas por último. */
+  sort: z.preprocess(
+    emptyToUndefined,
+    z.enum(["score", "recentes"]).catch("score").default("score"),
+  ),
+  /** Inclui vagas que não aparecem mais na fonte (provavelmente encerradas). */
+  closed: z.preprocess(
+    (value) => firstValue(value) === "1",
+    z.boolean().catch(false).default(false),
   ),
   source: z.preprocess(emptyToUndefined, z.enum(SOURCES).optional().catch(undefined)),
   modality: z.preprocess(emptyToUndefined, z.enum(MODALITIES).optional().catch(undefined)),
@@ -57,7 +74,9 @@ export const PAGE_SIZE = 50;
 export function filtersToQuery(filters: JobFilters, page: number): string {
   const params = new URLSearchParams();
   if (filters.q) params.set("q", filters.q);
-  if (filters.minScore > 0) params.set("minScore", String(filters.minScore));
+  if (filters.minScore !== scoring.listMinScore) params.set("minScore", String(filters.minScore));
+  if (filters.sort !== "score") params.set("sort", filters.sort);
+  if (filters.closed) params.set("closed", "1");
   if (filters.source) params.set("source", filters.source);
   if (filters.modality) params.set("modality", filters.modality);
   if (filters.status) params.set("status", filters.status);
