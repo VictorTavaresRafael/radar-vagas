@@ -41,6 +41,11 @@ export const profile: Profile = {
       text: "Na Domus Control, desenvolvo uma plataforma PWA multi-tenant de gestão para igrejas com Next.js, React, TypeScript e Tailwind CSS.",
     },
     {
+      id: "domus-apis-git",
+      kind: "experiencia",
+      text: "Integro o front-end a APIs REST e trabalho com Git, pull requests e code review no dia a dia.",
+    },
+    {
       id: "domus-ci",
       kind: "experiencia",
       text: "Criei o CI (integração contínua) no GitHub Actions, com type-check, testes automatizados com Vitest e auditoria de dependências.",
