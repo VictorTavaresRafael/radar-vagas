@@ -1,0 +1,39 @@
+name: Coleta de vagas
+
+on:
+  schedule:
+    # 08:00 e 18:00 em Brasília (UTC-3). O GitHub pode atrasar execuções agendadas em alguns minutos.
+    - cron: "0 11 * * *"
+    - cron: "0 21 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Duas coletas simultâneas disputariam as mesmas vagas no banco.
+concurrency:
+  group: collect
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Coletar, pontuar e gravar
+        run: npm run collect
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+          LLM_WEIGHT: ${{ vars.LLM_WEIGHT }}
+          SALARY_FLOOR_BRL: ${{ vars.SALARY_FLOOR_BRL }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
