@@ -121,7 +121,6 @@ Nenhuma é obrigatória para rodar localmente. Veja `.env.example`.
 | `SALARY_FLOOR_BRL`                       | Piso salarial mensal em reais. Sem valor, o filtro de salário fica desligado. |
 | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` | Alerta de vagas novas com score ≥ 80.                                         |
 | `GITHUB_TOKEN`                           | Opcional; aumenta o limite da API do GitHub. No Actions já vem injetado.      |
-| `DASHBOARD_PASSWORD`                     | Protege o painel com Basic Auth (`src/proxy.ts`). Obrigatória na Vercel.      |
 
 No GitHub, configure `DATABASE_URL`, `ANTHROPIC_API_KEY`, `TELEGRAM_BOT_TOKEN` e `TELEGRAM_CHAT_ID` como **secrets**, e `SALARY_FLOOR_BRL`, `LLM_WEIGHT` e `ANTHROPIC_MODEL` como **variables** do repositório.
 
@@ -194,14 +193,13 @@ Só APIs públicas documentadas: scraping de HTML está fora do escopo de propó
 1. Em [vercel.com/new](https://vercel.com/new), importe o repositório. O preset Next.js já serve: build `npm run build`, sem mudar nada.
 2. Em _Settings → Environment Variables_, cadastre para Production (e Preview, se for usar):
    - `DATABASE_URL`: a connection string do **pooler de transações** do Supabase (porta `6543`), a mesma do secret do Actions.
-   - `DASHBOARD_PASSWORD`: a senha do painel. O navegador pede usuário e senha; qualquer usuário serve.
    - Opcionais: `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`, `LLM_WEIGHT`, `SALARY_FLOOR_BRL`.
-3. Faça o deploy. As migrações **não** rodam na Vercel: quem as aplica é o workflow de coleta (ou `npm run db:migrate` local apontando para o Supabase).
+3. Em _Settings → Deployment Protection_, ative **Vercel Authentication**. Só quem entra com a conta da Vercel do projeto abre o painel; o código não tem login próprio.
+4. Faça o deploy. As migrações **não** rodam na Vercel: quem as aplica é o workflow de coleta (ou `npm run db:migrate` local apontando para o Supabase).
 
 Salvaguardas no código:
 
-- Com `VERCEL=1` (definido pela própria Vercel), faltar `DATABASE_URL` ou `DASHBOARD_PASSWORD` é erro: o painel não sobe aberto nem cai no PGlite, que gravaria num disco efêmero.
-- O `src/proxy.ts` responde 503 se, mesmo assim, chegar uma requisição sem senha configurada.
+- Com `VERCEL=1` (definido pela própria Vercel), faltar `DATABASE_URL` é erro: o painel não cai no PGlite, que gravaria num disco efêmero.
 - Na Vercel, cada função abre no máximo uma conexão com o Postgres, para não esgotar o pooler do Supabase.
 
 ## Decisões técnicas
@@ -212,7 +210,7 @@ Salvaguardas no código:
 - **Falhas isoladas**: uma fonte fora do ar, um LLM lento ou um Telegram indisponível nunca impedem o resto da coleta de ser gravado.
 - **Coluna `modality`** ao lado de `remote`: o booleano não distingue híbrido de presencial, e o score precisa dessa diferença. `remote` é derivado dela.
 - **Server components e server actions**: os formulários (status, notas, candidatura) funcionam sem JavaScript no cliente; o único componente cliente relevante é o painel de rascunhos (copiar e gerar com IA).
-- **`proxy.ts`** é o nome do antigo `middleware.ts` no Next.js 16.
+- **Acesso pela Vercel Authentication** em vez de senha no código: o Basic Auth próprio dava atrito no navegador, e a proteção da Vercel usa a conta que já existe.
 - **Sem fontes remotas**: pilha de fontes do sistema, para o build funcionar offline.
 
 ## Limitações conhecidas

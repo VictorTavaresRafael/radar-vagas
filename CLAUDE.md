@@ -27,6 +27,6 @@ Convenções para agentes trabalhando neste repositório. `SPEC.md` é a fonte d
 
 ## Ambiente
 
-- Next.js 16: `params`/`searchParams` são Promises; o middleware se chama `src/proxy.ts`.
+- Next.js 16: `params`/`searchParams` são Promises; o middleware se chamaria `src/proxy.ts`.
 - Não use `next/font/google` nem recursos remotos no build.
 - PGlite em disco aceita um processo por vez: não rode `collect` com o `dev` aberto.
