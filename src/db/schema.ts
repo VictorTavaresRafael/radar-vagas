@@ -11,6 +11,8 @@ import {
 } from "drizzle-orm/pg-core";
 import type { Contract, Currency, Modality, Seniority, SourceId } from "@/domain/job";
 import type { JobStatus } from "@/domain/status";
+import type { DraftKind } from "@/drafts/kinds";
+import type { Violation } from "@/drafts/verify";
 import type { ScoreBreakdown } from "@/scoring/types";
 
 const timestamptz = (name: string) => timestamp(name, { withTimezone: true });
@@ -81,6 +83,26 @@ export const events = pgTable(
   (table) => [index("events_job_id_idx").on(table.jobId)],
 );
 
+/** Histórico dos rascunhos gerados com IA. Cada clique em "Gerar com IA" é uma geração com os três tipos. */
+export const drafts = pgTable(
+  "drafts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    jobId: uuid("job_id")
+      .notNull()
+      .references(() => jobs.id, { onDelete: "cascade" }),
+    generationId: uuid("generation_id").notNull(),
+    kind: text("kind").$type<DraftKind>().notNull(),
+    // "template" aparece quando o texto da IA foi reprovado e o template entrou no lugar.
+    origin: text("origin").$type<"llm" | "template">().notNull(),
+    text: text("text").notNull(),
+    rejected: jsonb("rejected").$type<Violation[]>().notNull().default([]),
+    createdAt: timestamptz("created_at").notNull().defaultNow(),
+  },
+  (table) => [index("drafts_job_id_created_at_idx").on(table.jobId, table.createdAt)],
+);
+
 export type JobRow = typeof jobs.$inferSelect;
 export type ApplicationRow = typeof applications.$inferSelect;
 export type EventRow = typeof events.$inferSelect;
+export type DraftRow = typeof drafts.$inferSelect;

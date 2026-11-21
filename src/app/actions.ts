@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getDb } from "@/db";
 import { changeJobStatus, saveApplicationDetails } from "@/db/repositories/applications";
+import { recordDraftGeneration } from "@/db/repositories/drafts";
 import { getJob, saveJobNotes } from "@/db/repositories/jobs";
 import { JOB_STATUSES } from "@/domain/status";
 import { type DraftSet, generateDrafts } from "@/drafts/generate";
@@ -56,8 +57,11 @@ export async function saveApplicationAction(formData: FormData): Promise<void> {
 export async function generateLlmDraftsAction(jobId: string): Promise<DraftSet> {
   const id = jobIdSchema.parse(jobId);
   const llm = createLlmFromEnv(getEnv());
-  const job = await getJob(await getDb(), id);
+  const db = await getDb();
+  const job = await getJob(db, id);
   if (!job) throw new Error("Vaga não encontrada.");
   if (!llm) return { drafts: [], llmError: "ANTHROPIC_API_KEY não configurada." };
-  return generateDrafts(job, profile, llm);
+  const set = await generateDrafts(job, profile, llm);
+  if (await recordDraftGeneration(db, id, set, new Date())) revalidatePath(`/vagas/${id}`);
+  return set;
 }

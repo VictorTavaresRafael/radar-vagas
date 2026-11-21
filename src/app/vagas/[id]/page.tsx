@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { z } from "zod";
 import { saveNotesAction } from "@/app/actions";
 import { ApplicationForm } from "@/components/application-form";
+import { DraftHistory } from "@/components/draft-history";
 import { DraftsPanel } from "@/components/drafts-panel";
 import { KeywordList } from "@/components/keyword-list";
 import { ScoreBadge } from "@/components/score-badge";
@@ -11,6 +12,7 @@ import { ScoreBreakdownView } from "@/components/score-breakdown";
 import { StatusForm } from "@/components/status-form";
 import { getDb } from "@/db";
 import { getApplication, listJobEvents } from "@/db/repositories/applications";
+import { listDraftGenerations } from "@/db/repositories/drafts";
 import { getJob } from "@/db/repositories/jobs";
 import type { EventRow, JobRow } from "@/db/schema";
 import { MODALITY_LABELS, SOURCE_LABELS } from "@/domain/job";
@@ -52,10 +54,11 @@ function describeEvent(event: EventRow): string {
 export default async function JobPage({ params }: PageProps) {
   const job = await loadJob(params);
   const db = await getDb();
-  const [application, history, drafts] = await Promise.all([
+  const [application, history, drafts, draftHistory] = await Promise.all([
     getApplication(db, job.id),
     listJobEvents(db, job.id),
     generateDrafts(job, profile, null),
+    listDraftGenerations(db, job.id),
   ]);
   const salary = formatSalary(job.salaryMin, job.salaryMax, job.currency);
   const facts = [
@@ -114,6 +117,9 @@ export default async function JobPage({ params }: PageProps) {
               initial={drafts}
               llmEnabled={Boolean(getEnv().ANTHROPIC_API_KEY)}
             />
+          </div>
+          <div className={card}>
+            <DraftHistory generations={draftHistory} />
           </div>
           <details className={card}>
             <summary className="cursor-pointer text-lg font-semibold">Descrição da vaga</summary>
