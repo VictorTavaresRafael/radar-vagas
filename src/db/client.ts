@@ -34,10 +34,32 @@ export function createPgliteDb(dataDir?: string): DbHandle {
   };
 }
 
+interface PostgresNotice {
+  readonly severity?: string;
+  readonly message?: string;
+}
+
+/**
+ * NOTICE é informativo (ex.: "schema drizzle already exists, skipping" a cada migração)
+ * e só polui o log da coleta. Avisos mais graves continuam aparecendo.
+ */
+export function handlePostgresNotice(
+  notice: PostgresNotice,
+  warn: (message: string) => void = console.warn,
+): void {
+  if (notice.severity === "NOTICE" || notice.severity === "DEBUG" || notice.severity === "LOG")
+    return;
+  warn(`Postgres ${notice.severity ?? "aviso"}: ${notice.message ?? ""}`);
+}
+
 export function createPostgresDb(url: string, serverless = false): DbHandle {
   // `prepare: false` é exigido pelo pooler de transações do Supabase. Em função
   // serverless, cada instância abre uma conexão só, para não esgotar o pooler.
-  const client = postgres(url, { prepare: false, max: serverless ? 1 : 5 });
+  const client = postgres(url, {
+    prepare: false,
+    max: serverless ? 1 : 5,
+    onnotice: (notice) => handlePostgresNotice(notice),
+  });
   const db = drizzlePostgres(client, { schema });
   return {
     db,
