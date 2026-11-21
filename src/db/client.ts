@@ -55,9 +55,14 @@ export function handlePostgresNotice(
 export function createPostgresDb(url: string, serverless = false): DbHandle {
   // `prepare: false` é exigido pelo pooler de transações do Supabase. Em função
   // serverless, cada instância abre uma conexão só, para não esgotar o pooler.
+  // Os prazos fazem uma conexão morta virar erro em segundos, em vez de prender a
+  // função até o limite da Vercel; conexões ociosas fecham antes de a instância pausar.
   const client = postgres(url, {
     prepare: false,
     max: serverless ? 1 : 5,
+    connect_timeout: 10,
+    idle_timeout: serverless ? 5 : 20,
+    max_lifetime: 60 * 5,
     onnotice: (notice) => handlePostgresNotice(notice),
   });
   const db = drizzlePostgres(client, { schema });
