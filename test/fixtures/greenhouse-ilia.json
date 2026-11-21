@@ -1,0 +1,136 @@
+{
+  "jobs": [
+    {
+      "absolute_url": "https://job-boards.greenhouse.io/ilia/jobs/4012345006",
+      "data_compliance": [
+        {
+          "type": "gdpr",
+          "requires_consent": false,
+          "requires_processing_consent": false,
+          "requires_retention_consent": false,
+          "retention_period": null,
+          "demographic_data_consent_applies": false
+        }
+      ],
+      "internal_job_id": 4011345006,
+      "location": {
+        "name": "Remoto - Brasil"
+      },
+      "metadata": null,
+      "id": 4012345006,
+      "updated_at": "2026-11-19T14:32:10-03:00",
+      "requisition_id": "REQ-5006",
+      "title": "Desenvolvedor(a) Front-end React (Pleno)",
+      "company_name": null,
+      "first_published": "2026-11-18T09:00:00-03:00",
+      "language": "pt",
+      "content": "&lt;p&gt;&lt;strong&gt;Sobre a vaga&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;Buscamos uma pessoa desenvolvedora front-end para evoluir os produtos financeiros dos nossos clientes, trabalhando em squads multidisciplinares.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Requisitos&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Experiência sólida com React e TypeScript;&lt;/li&gt;&lt;li&gt;Next.js (App Router) e renderização no servidor;&lt;/li&gt;&lt;li&gt;Testes automatizados com Jest e Testing Library;&lt;/li&gt;&lt;li&gt;Tailwind CSS ou styled-components;&lt;/li&gt;&lt;li&gt;Versionamento com Git e code review.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;strong&gt;Diferenciais&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Conhecimento em AWS;&lt;/li&gt;&lt;li&gt;GraphQL;&lt;/li&gt;&lt;li&gt;Experiência com .NET é um plus.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;strong&gt;Benefícios&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Trabalho 100% remoto&lt;/li&gt;&lt;li&gt;Contratação CLT&lt;/li&gt;&lt;li&gt;Plano de saúde e auxílio home office&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Faixa salarial: R$ 9.000 a R$ 12.000&lt;/p&gt;",
+      "departments": [
+        {
+          "id": 4001,
+          "name": "Engenharia",
+          "child_ids": [],
+          "parent_id": null
+        }
+      ],
+      "offices": [
+        {
+          "id": 5001,
+          "name": "Remoto - Brasil",
+          "location": "Remoto - Brasil",
+          "child_ids": [],
+          "parent_id": null
+        }
+      ]
+    },
+    {
+      "absolute_url": "https://job-boards.greenhouse.io/ilia/jobs/4012345107",
+      "data_compliance": [
+        {
+          "type": "gdpr",
+          "requires_consent": false,
+          "requires_processing_consent": false,
+          "requires_retention_consent": false,
+          "retention_period": null,
+          "demographic_data_consent_applies": false
+        }
+      ],
+      "internal_job_id": 4011345107,
+      "location": {
+        "name": "Remoto - Brasil"
+      },
+      "metadata": null,
+      "id": 4012345107,
+      "updated_at": "2026-11-17T10:00:00-03:00",
+      "requisition_id": "REQ-5107",
+      "title": "Desenvolvedor(a) Back-end .NET (Pleno)",
+      "company_name": null,
+      "first_published": "2026-11-17T10:00:00-03:00",
+      "language": "pt",
+      "content": "&lt;p&gt;&lt;strong&gt;Responsabilidades&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Desenvolver e manter APIs em C# e .NET 8;&lt;/li&gt;&lt;li&gt;Modelar dados no SQL Server.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;strong&gt;Requisitos&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Experiência com C#, .NET e Entity Framework;&lt;/li&gt;&lt;li&gt;Mensageria com RabbitMQ.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;strong&gt;Diferenciais&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Conhecimento de React para pequenas telas internas.&lt;/li&gt;&lt;/ul&gt;",
+      "departments": [
+        {
+          "id": 4001,
+          "name": "Engenharia",
+          "child_ids": [],
+          "parent_id": null
+        }
+      ],
+      "offices": [
+        {
+          "id": 5001,
+          "name": "Remoto - Brasil",
+          "location": "Remoto - Brasil",
+          "child_ids": [],
+          "parent_id": null
+        }
+      ]
+    },
+    {
+      "absolute_url": "https://job-boards.greenhouse.io/ilia/jobs/4012345208",
+      "data_compliance": [
+        {
+          "type": "gdpr",
+          "requires_consent": false,
+          "requires_processing_consent": false,
+          "requires_retention_consent": false,
+          "retention_period": null,
+          "demographic_data_consent_applies": false
+        }
+      ],
+      "internal_job_id": 4011345208,
+      "location": {
+        "name": "Remoto - Brasil"
+      },
+      "metadata": null,
+      "id": 4012345208,
+      "updated_at": "2026-11-16T08:15:00-03:00",
+      "requisition_id": "REQ-5208",
+      "title": "Engenheiro(a) de Software Sênior - Front-end",
+      "company_name": null,
+      "first_published": "2026-11-16T08:15:00-03:00",
+      "language": "pt",
+      "content": "&lt;p&gt;&lt;strong&gt;O que esperamos&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;6+ anos de experiência com desenvolvimento front-end;&lt;/li&gt;&lt;li&gt;Domínio de React, TypeScript e Next.js;&lt;/li&gt;&lt;li&gt;Vivência liderando decisões de arquitetura.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;strong&gt;Benefícios&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Remoto, CLT&lt;/li&gt;&lt;/ul&gt;",
+      "departments": [
+        {
+          "id": 4001,
+          "name": "Engenharia",
+          "child_ids": [],
+          "parent_id": null
+        }
+      ],
+      "offices": [
+        {
+          "id": 5001,
+          "name": "Remoto - Brasil",
+          "location": "Remoto - Brasil",
+          "child_ids": [],
+          "parent_id": null
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "total": 3
+  }
+}

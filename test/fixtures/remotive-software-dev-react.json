@@ -1,0 +1,50 @@
+{
+  "00-warning": "This API is provided for job search and aggregation. Please link back to the original job URL on Remotive and mention Remotive as the source.",
+  "0-legal-notice": "Remotive API Legal Notice: by using this API you agree to the Terms of Service https://remotive.com/terms-of-service",
+  "job-count": 3,
+  "total-job-count": 3,
+  "jobs": [
+    {
+      "id": 2034567,
+      "url": "https://remotive.com/remote-jobs/software-dev/senior-react-developer-2034567",
+      "title": "Senior React Developer",
+      "company_name": "Northwind Labs",
+      "company_logo": "https://remotive.com/job/2034567/logo",
+      "category": "Software Development",
+      "tags": ["react", "typescript", "nextjs"],
+      "job_type": "full_time",
+      "publication_date": "2026-11-19T10:21:43",
+      "candidate_required_location": "Latin America",
+      "salary": "$6,000 - $8,000 /month",
+      "description": "<p><strong>About us</strong></p><p>Northwind Labs builds analytics tools for retailers.</p><p><strong>Requirements</strong></p><ul><li>5+ years of professional experience with React</li><li>TypeScript and Next.js</li><li>Strong communication skills</li></ul>"
+    },
+    {
+      "id": 2034568,
+      "url": "https://remotive.com/remote-jobs/software-dev/frontend-engineer-react-typescript-2034568",
+      "title": "Frontend Engineer (React/TypeScript)",
+      "company_name": "Brightwave",
+      "company_logo": "https://remotive.com/job/2034568/logo",
+      "category": "Software Development",
+      "tags": ["react", "typescript", "tailwind"],
+      "job_type": "contract",
+      "publication_date": "2026-11-20T03:05:00",
+      "candidate_required_location": "Brazil",
+      "salary": "",
+      "description": "<p>Brightwave is a remote-first studio building web apps for healthcare startups.</p><p><strong>What you'll need</strong></p><ul><li>2+ years with React and TypeScript</li><li>Tailwind CSS</li><li>Unit tests with Vitest</li><li>Excellent written English</li></ul><p><strong>Bonus points</strong></p><ul><li>Storybook</li><li>Figma</li></ul>"
+    },
+    {
+      "id": 2034569,
+      "url": "https://remotive.com/remote-jobs/software-dev/react-developer-contractor-latam-2034569",
+      "title": "React Developer (Contractor) - LatAm",
+      "company_name": "Oowlish",
+      "company_logo": "https://remotive.com/job/2034569/logo",
+      "category": "Software Development",
+      "tags": ["react", "typescript"],
+      "job_type": "contract",
+      "publication_date": "2026-11-18T14:00:00",
+      "candidate_required_location": "LATAM",
+      "salary": "$3,500 - $5,000 /month",
+      "description": "<p>Oowlish connects Latin American engineers with US clients.</p><p><strong>Requirements</strong></p><ul><li>3+ years of experience with React and TypeScript</li><li>Good written English communication</li></ul>"
+    }
+  ]
+}

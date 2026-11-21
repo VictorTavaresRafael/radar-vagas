@@ -1,0 +1,162 @@
+[
+  {
+    "url": "https://api.github.com/repos/react-brasil/vagas/issues/530",
+    "repository_url": "https://api.github.com/repos/react-brasil/vagas",
+    "labels_url": "https://api.github.com/repos/react-brasil/vagas/issues/530/labels{/name}",
+    "comments_url": "https://api.github.com/repos/react-brasil/vagas/issues/530/comments",
+    "events_url": "https://api.github.com/repos/react-brasil/vagas/issues/530/events",
+    "html_url": "https://github.com/react-brasil/vagas/issues/530",
+    "id": 3000000530,
+    "node_id": "I_kwDOAbc530",
+    "number": 530,
+    "title": "[Remoto] Desenvolvedor React Pleno @ Agência Sol",
+    "user": {
+      "login": "agenciasol",
+      "id": 100530,
+      "type": "User",
+      "site_admin": false
+    },
+    "labels": [
+      {
+        "id": 3184497562,
+        "node_id": "LA_kwDO52656d6f74",
+        "url": "https://api.github.com/repos/react-brasil/vagas/labels/Remoto",
+        "name": "Remoto",
+        "color": "ededed",
+        "default": false,
+        "description": null
+      },
+      {
+        "id": 3886957382,
+        "node_id": "LA_kwDO506c656e6f",
+        "url": "https://api.github.com/repos/react-brasil/vagas/labels/Pleno",
+        "name": "Pleno",
+        "color": "ededed",
+        "default": false,
+        "description": null
+      },
+      {
+        "id": 1835788069,
+        "node_id": "LA_kwDO504a",
+        "url": "https://api.github.com/repos/react-brasil/vagas/labels/PJ",
+        "name": "PJ",
+        "color": "ededed",
+        "default": false,
+        "description": null
+      }
+    ],
+    "state": "open",
+    "locked": false,
+    "assignee": null,
+    "assignees": [],
+    "milestone": null,
+    "comments": 0,
+    "created_at": "2026-11-19T12:00:00Z",
+    "updated_at": "2026-11-19T12:00:00Z",
+    "closed_at": null,
+    "author_association": "NONE",
+    "type": null,
+    "active_lock_reason": null,
+    "sub_issues_summary": {
+      "total": 0,
+      "completed": 0,
+      "percent_completed": 0
+    },
+    "body": "## Descrição\n\nAgência digital procura dev React para sites institucionais.\n\n## Requisitos\n\n- React\n- JavaScript\n- HTML e CSS\n\n## Salário\n\nR$ 3.500 (PJ)\n",
+    "reactions": {
+      "url": "https://api.github.com/repos/react-brasil/vagas/issues/530/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "timeline_url": "https://api.github.com/repos/react-brasil/vagas/issues/530/timeline",
+    "performed_via_github_app": null,
+    "state_reason": null
+  },
+  {
+    "url": "https://api.github.com/repos/react-brasil/vagas/issues/531",
+    "repository_url": "https://api.github.com/repos/react-brasil/vagas",
+    "labels_url": "https://api.github.com/repos/react-brasil/vagas/issues/531/labels{/name}",
+    "comments_url": "https://api.github.com/repos/react-brasil/vagas/issues/531/comments",
+    "events_url": "https://api.github.com/repos/react-brasil/vagas/issues/531/events",
+    "html_url": "https://github.com/react-brasil/vagas/issues/531",
+    "id": 3000000531,
+    "node_id": "I_kwDOAbc531",
+    "number": 531,
+    "title": "[Bauru] Desenvolvedor Front-end Pleno @ Coop Interior",
+    "user": {
+      "login": "coopinterior",
+      "id": 100531,
+      "type": "User",
+      "site_admin": false
+    },
+    "labels": [
+      {
+        "id": 3909937430,
+        "node_id": "LA_kwDO5072657365",
+        "url": "https://api.github.com/repos/react-brasil/vagas/labels/Presencial",
+        "name": "Presencial",
+        "color": "ededed",
+        "default": false,
+        "description": null
+      },
+      {
+        "id": 3176628079,
+        "node_id": "LA_kwDO434c54",
+        "url": "https://api.github.com/repos/react-brasil/vagas/labels/CLT",
+        "name": "CLT",
+        "color": "ededed",
+        "default": false,
+        "description": null
+      },
+      {
+        "id": 3886957382,
+        "node_id": "LA_kwDO506c656e6f",
+        "url": "https://api.github.com/repos/react-brasil/vagas/labels/Pleno",
+        "name": "Pleno",
+        "color": "ededed",
+        "default": false,
+        "description": null
+      }
+    ],
+    "state": "open",
+    "locked": false,
+    "assignee": null,
+    "assignees": [],
+    "milestone": null,
+    "comments": 0,
+    "created_at": "2026-11-10T10:00:00Z",
+    "updated_at": "2026-11-10T10:00:00Z",
+    "closed_at": null,
+    "author_association": "NONE",
+    "type": null,
+    "active_lock_reason": null,
+    "sub_issues_summary": {
+      "total": 0,
+      "completed": 0,
+      "percent_completed": 0
+    },
+    "body": "## Descrição\n\nCooperativa de crédito do interior de SP com sede em Bauru.\n\n## Local\n\nPresencial em Bauru - SP\n\n## Requisitos\n\n- React e Next.js\n- TypeScript\n- PostgreSQL\n\n## Contratação\n\nCLT\n",
+    "reactions": {
+      "url": "https://api.github.com/repos/react-brasil/vagas/issues/531/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "timeline_url": "https://api.github.com/repos/react-brasil/vagas/issues/531/timeline",
+    "performed_via_github_app": null,
+    "state_reason": null
+  }
+]

@@ -1,0 +1,43 @@
+[
+  {
+    "additional": "<div>Independent contractor agreement, paid in USD.</div>",
+    "additionalPlain": "Independent contractor agreement, paid in USD.",
+    "categories": {
+      "commitment": "Contractor",
+      "department": "Engenharia",
+      "location": "Latin America",
+      "team": "Engineering",
+      "allLocations": ["Latin America"]
+    },
+    "createdAt": 1794945600000,
+    "descriptionPlain": "Oowlish connects Latin American engineers with US clients. You will join a product team building a B2B SaaS.",
+    "description": "<div>Oowlish connects Latin American engineers with US clients. You will join a product team building a B2B SaaS.</div>",
+    "descriptionBody": "<div>Oowlish connects Latin American engineers with US clients. You will join a product team building a B2B SaaS.</div>",
+    "descriptionBodyPlain": "Oowlish connects Latin American engineers with US clients. You will join a product team building a B2B SaaS.",
+    "id": "d6a4f5e7-8e91-4ca3-9dc4-3e5f60718293",
+    "lists": [
+      {
+        "text": "Requirements",
+        "content": "<li>3+ years of experience with React and TypeScript</li><li>Good written English communication</li><li>Experience with REST APIs</li>"
+      },
+      {
+        "text": "Nice to have",
+        "content": "<li>Next.js</li><li>Tailwind CSS</li>"
+      }
+    ],
+    "text": "React Developer (Contractor) - LatAm",
+    "country": null,
+    "workplaceType": "remote",
+    "opening": "",
+    "openingPlain": "",
+    "hostedUrl": "https://jobs.lever.co/oowlish/d6a4f5e7-8e91-4ca3-9dc4-3e5f60718293",
+    "applyUrl": "https://jobs.lever.co/oowlish/d6a4f5e7-8e91-4ca3-9dc4-3e5f60718293/apply",
+    "salaryRange": {
+      "min": 3500,
+      "max": 5000,
+      "currency": "USD",
+      "interval": "per-month-salary"
+    },
+    "salaryDescriptionPlain": ""
+  }
+]
