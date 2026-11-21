@@ -47,3 +47,15 @@ describe("deploy na Vercel", () => {
     expect(proxy(request()).headers.get("x-middleware-next")).toBe("1");
   });
 });
+
+describe("coleta no GitHub Actions", () => {
+  it("falha sem DATABASE_URL em vez de gravar num PGlite descartável", () => {
+    expect(() => parseEnv({ GITHUB_ACTIONS: "true" })).toThrow(
+      /DATABASE_URL: obrigatória no GitHub Actions/,
+    );
+    expect(() => parseEnv({ GITHUB_ACTIONS: "true", DATABASE_URL: "" })).toThrow(/DATABASE_URL/);
+    expect(parseEnv({ GITHUB_ACTIONS: "true", DATABASE_URL: "postgresql://x" })).toMatchObject({
+      DATABASE_URL: "postgresql://x",
+    });
+  });
+});
