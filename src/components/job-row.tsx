@@ -2,6 +2,7 @@ import { scoring } from "@config/scoring";
 import Link from "next/link";
 import type { JobListItem } from "@/db/repositories/jobs";
 import { MODALITY_LABELS, SOURCE_LABELS } from "@/domain/job";
+import { REGION_LABELS } from "@/domain/region";
 import { STATUS_LABELS } from "@/domain/status";
 import { formatDate, hoursBetween } from "@/lib/dates";
 import { formatSalary } from "@/lib/format";
@@ -50,6 +51,9 @@ export function JobRow({ job, now }: { job: JobListItem; now: Date }) {
             )}
             {salary && <span className={salaryChip}>{salary}</span>}
             {job.modality && <span className={chip}>{MODALITY_LABELS[job.modality]}</span>}
+            {job.region && job.region !== "brasil" && (
+              <span className={chip}>🌎 {REGION_LABELS[job.region]}</span>
+            )}
             {job.contract && <span className={chip}>{job.contract.toUpperCase()}</span>}
             <span className={chip}>
               {SOURCE_LABELS[job.source]}

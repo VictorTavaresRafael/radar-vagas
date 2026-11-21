@@ -10,6 +10,7 @@ const RULES: readonly EliminationRule[] = [
   "ingles",
   "presencial",
   "salario",
+  "area",
 ];
 
 export function baseJob(now: Date): NormalizedJob {

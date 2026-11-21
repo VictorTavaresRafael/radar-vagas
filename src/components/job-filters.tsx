@@ -1,16 +1,24 @@
-import { ALL_STATUSES, type JobFilters } from "@/domain/filters";
+import { ABROAD, ALL_STATUSES, type JobFilters } from "@/domain/filters";
 import { MODALITIES, MODALITY_LABELS, SOURCE_LABELS, SOURCES } from "@/domain/job";
+import { REGION_LABELS, REGIONS } from "@/domain/region";
 import { JOB_STATUSES, STATUS_LABELS } from "@/domain/status";
 
 const field =
   "rounded-md border border-zinc-300 bg-white px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-900";
 
 /** Formulário GET: os filtros ficam na URL, então dá para salvar e compartilhar a busca. */
-export function JobFiltersForm({ filters }: { filters: JobFilters }) {
+export function JobFiltersForm({
+  filters,
+  suggestedFloor,
+}: {
+  filters: JobFilters;
+  /** Mediana dos salários divulgados, sugerida como ponto de partida. */
+  suggestedFloor: number | null;
+}) {
   return (
     <form
       method="get"
-      className="grid grid-cols-2 gap-3 rounded-xl border border-zinc-200 bg-white p-4 shadow-sm sm:grid-cols-3 lg:grid-cols-6 dark:border-zinc-800 dark:bg-zinc-900"
+      className="grid grid-cols-2 gap-3 rounded-xl border border-zinc-200 bg-white p-4 shadow-sm sm:grid-cols-3 lg:grid-cols-4 dark:border-zinc-800 dark:bg-zinc-900"
     >
       <label className="col-span-2 flex flex-col gap-1 text-xs text-zinc-600 dark:text-zinc-400">
         Busca
@@ -55,6 +63,33 @@ export function JobFiltersForm({ filters }: { filters: JobFilters }) {
         </select>
       </label>
       <label className="flex flex-col gap-1 text-xs text-zinc-600 dark:text-zinc-400">
+        Região
+        <select name="region" defaultValue={filters.region ?? ""} className={field}>
+          <option value="">Mundo todo</option>
+          <option value="brasil">{REGION_LABELS.brasil}</option>
+          <option value={ABROAD}>Fora do Brasil</option>
+          <optgroup label="Continente">
+            {REGIONS.filter((region) => region !== "brasil").map((region) => (
+              <option key={region} value={region}>
+                {REGION_LABELS[region]}
+              </option>
+            ))}
+          </optgroup>
+        </select>
+      </label>
+      <label className="flex flex-col gap-1 text-xs text-zinc-600 dark:text-zinc-400">
+        Salário mínimo (R$/mês)
+        <input
+          name="minSalary"
+          type="number"
+          min={0}
+          step={500}
+          defaultValue={filters.minSalary ?? ""}
+          placeholder={suggestedFloor ? suggestedFloor.toLocaleString("pt-BR") : "ex.: 6000"}
+          className={field}
+        />
+      </label>
+      <label className="flex flex-col gap-1 text-xs text-zinc-600 dark:text-zinc-400">
         Status
         <select name="status" defaultValue={filters.status ?? ""} className={field}>
           <option value="">Ativas</option>
@@ -66,7 +101,7 @@ export function JobFiltersForm({ filters }: { filters: JobFilters }) {
           ))}
         </select>
       </label>
-      <div className="col-span-2 flex items-end gap-2 sm:col-span-3 lg:col-span-6">
+      <div className="col-span-2 flex flex-wrap items-end gap-x-3 gap-y-1 sm:col-span-3 lg:col-span-4">
         <button
           type="submit"
           className="rounded-md bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white dark:bg-white dark:text-zinc-900"
@@ -79,6 +114,12 @@ export function JobFiltersForm({ filters }: { filters: JobFilters }) {
         >
           Limpar
         </a>
+        {suggestedFloor !== null && !filters.minSalary && (
+          <span className="text-xs text-zinc-500">
+            Piso sugerido: R$ {suggestedFloor.toLocaleString("pt-BR")} (mediana dos salários
+            divulgados). Vagas sem salário ou em dólar continuam na lista.
+          </span>
+        )}
       </div>
     </form>
   );

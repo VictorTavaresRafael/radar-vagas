@@ -1,9 +1,10 @@
 import { connection } from "next/server";
+import { Highlights } from "@/components/highlights";
 import { JobFiltersForm } from "@/components/job-filters";
 import { JobRow } from "@/components/job-row";
 import { Pagination } from "@/components/pagination";
 import { getDb } from "@/db";
-import { countJobs, listJobs } from "@/db/repositories/jobs";
+import { countJobs, listHighlights, listJobs, suggestedSalaryFloor } from "@/db/repositories/jobs";
 import { PAGE_SIZE, parseJobFilters } from "@/domain/filters";
 
 export default async function HomePage({
@@ -17,10 +18,12 @@ export default async function HomePage({
   // Em sequência: na Vercel há uma conexão só com o pooler do Supabase.
   const total = await countJobs(db, filters);
   const jobs = await listJobs(db, filters);
+  const now = new Date();
+  const highlights = filters.page === 1 ? await listHighlights(db, filters, now) : [];
+  const floor = await suggestedSalaryFloor(db);
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const first = total === 0 ? 0 : (filters.page - 1) * PAGE_SIZE + 1;
   const last = Math.min(filters.page * PAGE_SIZE, total);
-  const now = new Date();
 
   return (
     <div className="space-y-6">
@@ -38,7 +41,8 @@ export default async function HomePage({
             : `${first}–${last} de ${total.toLocaleString("pt-BR")} ${total === 1 ? "vaga" : "vagas"}`}
         </p>
       </div>
-      <JobFiltersForm filters={filters} />
+      <JobFiltersForm filters={filters} suggestedFloor={floor} />
+      <Highlights jobs={highlights} />
       {jobs.length === 0 ? (
         <p className="rounded-xl border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:border-zinc-700">
           {total === 0 ? (
