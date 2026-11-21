@@ -99,3 +99,36 @@ export function listKanbanCards(db: Db, statuses: readonly JobStatus[]): Promise
     .where(inArray(jobs.status, [...statuses]))
     .orderBy(asc(applications.nextStepAt), desc(jobs.score));
 }
+
+export interface ApplicationExportRow {
+  readonly company: string;
+  readonly title: string;
+  readonly url: string;
+  readonly status: JobStatus;
+  readonly appliedAt: Date;
+  readonly channel: string;
+  readonly nextStep: string;
+  readonly nextStepAt: Date | null;
+  readonly score: number;
+  readonly notes: string;
+}
+
+/** Só vagas com candidatura registrada, da mais recente para a mais antiga. */
+export function listApplicationsForExport(db: Db): Promise<ApplicationExportRow[]> {
+  return db
+    .select({
+      company: jobs.company,
+      title: jobs.title,
+      url: jobs.url,
+      status: jobs.status,
+      appliedAt: applications.appliedAt,
+      channel: applications.channel,
+      nextStep: applications.nextStep,
+      nextStepAt: applications.nextStepAt,
+      score: jobs.score,
+      notes: applications.notes,
+    })
+    .from(applications)
+    .innerJoin(jobs, eq(applications.jobId, jobs.id))
+    .orderBy(desc(applications.appliedAt));
+}
