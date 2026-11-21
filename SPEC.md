@@ -67,7 +67,7 @@ Empresas iniciais (configuráveis em `config/sources.ts`):
 - `npm run collect` — roda todos os coletores, normaliza, deduplica, pontua, grava.
 - `npm run dev` — painel.
 - `npm test` — Vitest, **100% offline** com fixtures em `test/fixtures/`.
-- `.github/workflows/collect.yml` — cron 2×/dia (08:00 e 18:00 BRT) rodando `npm run collect` contra `DATABASE_URL`; workflow de CI com typecheck, lint e testes em PR.
+- `.github/workflows/collect.yml` — cron 2×/dia (07:47 e 17:47 BRT, fora da hora cheia) rodando `npm run collect` contra `DATABASE_URL`; workflow de CI com typecheck, lint e testes em PR.
 - Alertas opcionais: Telegram (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`) com as vagas novas de score ≥ 80.
 
 ## Perfil verificado (fonte da verdade para `config/profile.ts`)
