@@ -2,10 +2,14 @@ import { type NextRequest, NextResponse } from "next/server";
 
 /**
  * Senha única opcional para quando o painel for publicado. Sem DASHBOARD_PASSWORD
- * (uso local), passa direto. Qualquer usuário serve; só a senha é conferida.
+ * (uso local), passa direto; na Vercel, a senha é obrigatória. Qualquer usuário serve; só a senha é conferida.
  */
 export function proxy(request: NextRequest): NextResponse {
   const password = process.env.DASHBOARD_PASSWORD;
+  // Publicado sem senha, falha fechado em vez de deixar o painel aberto.
+  if (!password && process.env.VERCEL) {
+    return new NextResponse("Defina DASHBOARD_PASSWORD para publicar o painel.", { status: 503 });
+  }
   if (!password) return NextResponse.next();
   if (hasValidCredentials(request.headers.get("authorization"), password))
     return NextResponse.next();
