@@ -88,13 +88,15 @@ export function findEliminations(job: NormalizedJob, context: ScoreContext): Eli
   if (requiresFluentEnglish(job)) {
     eliminations.push({ rule: "ingles", reason: "Inglês fluente/C1 obrigatório." });
   }
+  // Híbrido também exige ir ao escritório: fora das cidades aceitas é tão inviável quanto presencial.
   if (
-    job.modality === "presencial" &&
+    (job.modality === "presencial" || job.modality === "hibrido") &&
     !isInAcceptedCity(job.location ?? job.title, context.profile)
   ) {
+    const label = job.modality === "presencial" ? "Presencial" : "Híbrido";
     eliminations.push({
       rule: "presencial",
-      reason: `Presencial fora das cidades aceitas (${job.location ?? "local não informado"}).`,
+      reason: `${label} fora das cidades aceitas (${job.location ?? "local não informado"}).`,
     });
   }
   const ceiling = salaryCeiling(job);

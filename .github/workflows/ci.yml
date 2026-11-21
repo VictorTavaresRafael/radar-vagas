@@ -32,5 +32,7 @@ jobs:
         run: npm run lint
       - name: Testes (offline, com fixtures e PGlite)
         run: npm test
+      - name: Eval do score (casos rotulados)
+        run: npm run eval
       - name: Build
         run: npm run build
