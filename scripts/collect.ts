@@ -3,6 +3,7 @@ import { buildCollectors } from "@/collectors";
 import { createDbFromEnv } from "@/db/client";
 import { getEnv } from "@/lib/env";
 import { runCollect } from "@/pipeline/collect";
+import { formatTopJobs } from "@/pipeline/report";
 import { createLlmFromEnv, createNotifierFromEnv, scoreContextFromEnv } from "@/runtime";
 import { loadDotEnv } from "./load-env";
 
@@ -27,6 +28,7 @@ try {
   console.log(
     `${report.normalized} vagas coletadas, ${report.unique} únicas: ${report.inserted} novas, ${report.updated} já conhecidas, ${report.alerts.length} com score alto.`,
   );
+  for (const line of formatTopJobs(report.top)) console.log(line);
   // Falha total (todas as fontes fora) deve aparecer como erro no GitHub Actions.
   if (report.collectors.every((collector) => collector.error !== null)) process.exitCode = 1;
 } finally {
