@@ -3,11 +3,17 @@ import type { Collector } from "@/collectors/types";
 import type { Db } from "@/db/client";
 import { findExistingJob, insertJob, markJobSeen } from "@/db/repositories/jobs";
 import type { MergedJob, NormalizedJob } from "@/domain/job";
+import { mapWithConcurrency } from "@/lib/concurrency";
 import type { LlmClient } from "@/llm/client";
 import { scoreJob } from "@/scoring/score";
 import type { ScoreContext } from "@/scoring/types";
 import { dedupeJobs } from "./dedupe";
 import type { AlertJob, Notifier } from "./notify";
+import { type TopJob, topJobs } from "./report";
+
+// Igual ao número de conexões do cliente Postgres: mais que isso só enfileiraria no pool.
+const PERSIST_CONCURRENCY = 5;
+const TOP_LIMIT = 10;
 
 export interface CollectDeps {
   readonly db: Db;
@@ -31,6 +37,8 @@ export interface CollectReport {
   readonly inserted: number;
   readonly updated: number;
   readonly alerts: readonly AlertJob[];
+  /** Vagas novas de maior score nesta coleta, para o log. */
+  readonly top: readonly TopJob[];
 }
 
 /** `fetch failed` sozinho não diz nada; a causa (DNS, TLS, recusa) vem em `error.cause`. */
@@ -52,15 +60,17 @@ async function runCollector(
   }
 }
 
-async function persistJob(
-  deps: CollectDeps,
-  job: MergedJob,
-): Promise<{ inserted: boolean; alert: AlertJob | null }> {
+interface PersistOutcome {
+  readonly inserted: TopJob | null;
+  readonly alert: AlertJob | null;
+}
+
+async function persistJob(deps: CollectDeps, job: MergedJob): Promise<PersistOutcome> {
   const { db, scoreContext } = deps;
   const existing = await findExistingJob(db, job);
   if (existing) {
     await markJobSeen(db, existing, job, scoreContext.now);
-    return { inserted: false, alert: null };
+    return { inserted: null, alert: null };
   }
   // O score é calculado só na primeira vez que a vaga aparece, para não repetir chamadas de LLM.
   const result = await scoreJob(job, scoreContext, deps.llm);
@@ -69,7 +79,37 @@ async function persistJob(
     result.score >= scoring.alertMinScore
       ? { title: row.title, company: row.company, score: row.score, url: row.url }
       : null;
-  return { inserted: true, alert };
+  const inserted = {
+    score: row.score,
+    title: row.title,
+    company: row.company,
+    url: row.url,
+    breakdown: result.breakdown,
+  };
+  return { inserted, alert };
+}
+
+/**
+ * Grava em paralelo, exceto vagas que repetem fonte + id externo: essas vão depois,
+ * em sequência, para a segunda encontrar a primeira já gravada em vez de violar o índice único.
+ */
+async function persistAll(
+  deps: CollectDeps,
+  jobs: readonly MergedJob[],
+): Promise<PersistOutcome[]> {
+  const seen = new Set<string>();
+  const first: MergedJob[] = [];
+  const repeated: MergedJob[] = [];
+  for (const job of jobs) {
+    const key = `${job.source}:${job.externalId}`;
+    (seen.has(key) ? repeated : first).push(job);
+    seen.add(key);
+  }
+  const outcomes = await mapWithConcurrency(first, PERSIST_CONCURRENCY, (job) =>
+    persistJob(deps, job),
+  );
+  for (const job of repeated) outcomes.push(await persistJob(deps, job));
+  return outcomes;
 }
 
 export async function runCollect(deps: CollectDeps): Promise<CollectReport> {
@@ -82,13 +122,9 @@ export async function runCollect(deps: CollectDeps): Promise<CollectReport> {
   const normalized = outcomes.flatMap((outcome) => outcome.jobs);
   const unique = dedupeJobs(normalized);
 
-  let inserted = 0;
-  const alerts: AlertJob[] = [];
-  for (const job of unique) {
-    const outcome = await persistJob(deps, job);
-    if (outcome.inserted) inserted += 1;
-    if (outcome.alert) alerts.push(outcome.alert);
-  }
+  const persisted = await persistAll(deps, unique);
+  const insertedJobs = persisted.flatMap((outcome) => (outcome.inserted ? [outcome.inserted] : []));
+  const alerts = persisted.flatMap((outcome) => (outcome.alert ? [outcome.alert] : []));
 
   if (deps.notifier && alerts.length > 0) {
     try {
@@ -102,8 +138,9 @@ export async function runCollect(deps: CollectDeps): Promise<CollectReport> {
     collectors: outcomes.map((outcome) => outcome.result),
     normalized: normalized.length,
     unique: unique.length,
-    inserted,
-    updated: unique.length - inserted,
+    inserted: insertedJobs.length,
+    updated: unique.length - insertedJobs.length,
     alerts,
+    top: topJobs(insertedJobs, TOP_LIMIT),
   };
 }
