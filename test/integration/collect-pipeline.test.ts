@@ -1,6 +1,7 @@
 import { profile } from "@config/profile";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { buildCollectors } from "@/collectors";
+import type { Collector } from "@/collectors/types";
 import { createPgliteDb, type DbHandle } from "@/db/client";
 import {
   changeJobStatus,
@@ -10,9 +11,11 @@ import {
 } from "@/db/repositories/applications";
 import { getJob, listJobs } from "@/db/repositories/jobs";
 import { parseJobFilters } from "@/domain/filters";
+import type { NormalizedJob } from "@/domain/job";
 import { type CollectDeps, runCollect } from "@/pipeline/collect";
 import type { AlertJob, Notifier } from "@/pipeline/notify";
 import { createFixtureFetch, FIXTURE_NOW, FIXTURE_SOURCES } from "../support/fixtures";
+import { makeJob } from "../support/jobs";
 import { fakeLlm } from "../support/llm";
 
 let handle: DbHandle;
@@ -113,6 +116,27 @@ describe("npm run collect (pipeline)", () => {
     const job = top ? await getJob(handle.db, top.id) : undefined;
     expect(job?.lastSeenAt.toISOString()).toBe(later.toISOString());
     expect(job?.firstSeenAt.toISOString()).toBe(FIXTURE_NOW.toISOString());
+  });
+
+  it("grava em paralelo sem violar o índice de fonte + id externo", async () => {
+    // Mesmo id externo com títulos diferentes: dedupe gera duas vagas, o banco aceita uma.
+    const repeated = [
+      makeJob({ externalId: "42", title: "Desenvolvedor Front-end Pleno" }),
+      makeJob({ externalId: "42", title: "Desenvolvedor Front-end Pleno (vaga reaberta)" }),
+      ...Array.from({ length: 12 }, (_, index) =>
+        makeJob({ externalId: `x${index}`, title: `Vaga ${index}` }),
+      ),
+    ];
+    const collector: Collector<NormalizedJob> = {
+      id: "greenhouse:teste",
+      source: "greenhouse",
+      fetchJobs: async () => repeated,
+      normalize: (job) => job,
+    };
+    const report = await runCollect(deps({ collectors: [collector as Collector<unknown>] }));
+    expect(report.unique).toBe(14);
+    expect(report.inserted).toBe(13);
+    expect(report.updated).toBe(1);
   });
 
   it("isola a fonte que falhou e segue com as outras", async () => {

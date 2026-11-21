@@ -3,6 +3,7 @@ import type { Collector } from "@/collectors/types";
 import type { Db } from "@/db/client";
 import { findExistingJob, insertJob, markJobSeen } from "@/db/repositories/jobs";
 import type { MergedJob, NormalizedJob } from "@/domain/job";
+import { mapWithConcurrency } from "@/lib/concurrency";
 import type { LlmClient } from "@/llm/client";
 import { scoreJob } from "@/scoring/score";
 import type { ScoreContext } from "@/scoring/types";
@@ -10,6 +11,8 @@ import { dedupeJobs } from "./dedupe";
 import type { AlertJob, Notifier } from "./notify";
 import { type TopJob, topJobs } from "./report";
 
+// Igual ao número de conexões do cliente Postgres: mais que isso só enfileiraria no pool.
+const PERSIST_CONCURRENCY = 5;
 const TOP_LIMIT = 10;
 
 export interface CollectDeps {
@@ -86,12 +89,26 @@ async function persistJob(deps: CollectDeps, job: MergedJob): Promise<PersistOut
   return { inserted, alert };
 }
 
+/**
+ * Grava em paralelo, exceto vagas que repetem fonte + id externo: essas vão depois,
+ * em sequência, para a segunda encontrar a primeira já gravada em vez de violar o índice único.
+ */
 async function persistAll(
   deps: CollectDeps,
   jobs: readonly MergedJob[],
 ): Promise<PersistOutcome[]> {
-  const outcomes: PersistOutcome[] = [];
-  for (const job of jobs) outcomes.push(await persistJob(deps, job));
+  const seen = new Set<string>();
+  const first: MergedJob[] = [];
+  const repeated: MergedJob[] = [];
+  for (const job of jobs) {
+    const key = `${job.source}:${job.externalId}`;
+    (seen.has(key) ? repeated : first).push(job);
+    seen.add(key);
+  }
+  const outcomes = await mapWithConcurrency(first, PERSIST_CONCURRENCY, (job) =>
+    persistJob(deps, job),
+  );
+  for (const job of repeated) outcomes.push(await persistJob(deps, job));
   return outcomes;
 }
 
