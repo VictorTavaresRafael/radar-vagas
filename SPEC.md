@@ -60,7 +60,7 @@ Empresas iniciais (configuráveis em `config/sources.ts`):
 - `/`: lista de vagas com filtros (score mínimo, fonte, modalidade, status, busca), ordenada por score e recência; badge "nova" para vistas nas últimas 24 h.
 - `/vagas/[id]`: detalhes, score explicado, palavras-chave faltantes, rascunhos gerados com botão copiar, link para a vaga original, troca de status, notas.
 - `/candidaturas`: kanban por status, com próximos passos e datas.
-- Sem autenticação no MVP (uso local); deixar um middleware de senha simples por env `DASHBOARD_PASSWORD` para quando for publicado.
+- Sem autenticação no MVP (uso local); publicado, o acesso fica com a Vercel Authentication.
 
 ## Execução
 

@@ -14,7 +14,6 @@ const envSchema = z.object({
   TELEGRAM_BOT_TOKEN: optionalString,
   TELEGRAM_CHAT_ID: optionalString,
   GITHUB_TOKEN: optionalString,
-  DASHBOARD_PASSWORD: optionalString,
   // A Vercel define VERCEL=1 no build e nas funções.
   VERCEL: optionalString,
   // O GitHub Actions define GITHUB_ACTIONS=true em todo job.
@@ -22,17 +21,16 @@ const envSchema = z.object({
 });
 
 /**
- * Publicado na Vercel, o painel precisa do Postgres (o PGlite gravaria num disco
- * efêmero) e de senha (sem ela, qualquer um com a URL veria e mudaria os dados).
+ * Publicado na Vercel, o painel precisa do Postgres: o PGlite gravaria num disco efêmero.
+ * O acesso é protegido pela Vercel Authentication (Deployment Protection), fora do código.
  */
 const deployedEnvSchema = envSchema.superRefine((env, context) => {
-  const required = (key: "DATABASE_URL" | "DASHBOARD_PASSWORD", where: string) => {
+  const required = (key: "DATABASE_URL", where: string) => {
     if (!env[key])
       context.addIssue({ code: "custom", path: [key], message: `obrigatória ${where}` });
   };
   if (env.VERCEL) {
     required("DATABASE_URL", "na Vercel");
-    required("DASHBOARD_PASSWORD", "na Vercel");
   }
   // Sem o secret, a coleta gravaria num PGlite descartado ao fim do job e terminaria verde.
   if (env.GITHUB_ACTIONS === "true") {
