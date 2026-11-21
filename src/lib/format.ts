@@ -1,3 +1,4 @@
+import { MIN_PLAUSIBLE_SALARY } from "@/collectors/infer";
 import type { Currency } from "@/domain/job";
 
 export function formatSalary(
@@ -5,7 +6,8 @@ export function formatSalary(
   max: number | null,
   currency: Currency | null,
 ): string | null {
-  if (min === null || currency === null) return null;
+  // Vagas gravadas antes do corte de cifras da empresa ainda têm "R$ 2" no banco.
+  if (min === null || currency === null || min < MIN_PLAUSIBLE_SALARY) return null;
   const format = new Intl.NumberFormat("pt-BR", {
     style: "currency",
     currency,

@@ -8,7 +8,10 @@ const field =
 /** Formulário GET: os filtros ficam na URL, então dá para salvar e compartilhar a busca. */
 export function JobFiltersForm({ filters }: { filters: JobFilters }) {
   return (
-    <form method="get" className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+    <form
+      method="get"
+      className="grid grid-cols-2 gap-3 rounded-xl border border-zinc-200 bg-white p-4 shadow-sm sm:grid-cols-3 lg:grid-cols-6 dark:border-zinc-800 dark:bg-zinc-900"
+    >
       <label className="col-span-2 flex flex-col gap-1 text-xs text-zinc-600 dark:text-zinc-400">
         Busca
         <input
@@ -54,7 +57,7 @@ export function JobFiltersForm({ filters }: { filters: JobFilters }) {
       <label className="flex flex-col gap-1 text-xs text-zinc-600 dark:text-zinc-400">
         Status
         <select name="status" defaultValue={filters.status ?? ""} className={field}>
-          <option value="">Ativas (sem descartadas)</option>
+          <option value="">Ativas</option>
           <option value={ALL_STATUSES}>Todas</option>
           {JOB_STATUSES.map((status) => (
             <option key={status} value={status}>

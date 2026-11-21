@@ -57,15 +57,25 @@ export interface SalaryRange {
   currency: Currency;
 }
 
-const AMOUNT = String.raw`(\d{1,3}(?:[.,]\d{3})+(?:[.,]\d{2})?|\d+(?:[.,]\d+)?)\s*(k|mil)?`;
+const AMOUNT = String.raw`(\d{1,3}(?:[.,]\d{3})+(?:[.,]\d{2})?|\d+(?:[.,]\d+)?)\s*(k|mil(?![a-zà-ú]))?`;
 const BRL_RANGE = new RegExp(
   String.raw`R\$\s*${AMOUNT}(?:\s*(?:a|até|-|–|—|to)\s*(?:R\$\s*)?${AMOUNT})?`,
-  "i",
+  "gi",
 );
 const USD_RANGE = new RegExp(
   String.raw`(?:US\$|USD\s*\$?|\$)\s*${AMOUNT}(?:\s*(?:a|até|-|–|—|to)\s*(?:US\$|USD\s*\$?|\$)?\s*${AMOUNT})?`,
-  "i",
+  "gi",
 );
+
+/**
+ * Valor seguido de "bilhões", "million" etc. é cifra da empresa ("R$ 2 bi em crédito"),
+ * não salário. Sem esse corte, a lista mostrava "R$ 2" e "US$ 5".
+ */
+const MAGNITUDE_AFTER =
+  /^\s*(?:bi\b|bilh|bilion|billion|mi\b|milh|million|mm\b|tri\b|trilh|trillion|b\b|m\b)/i;
+
+/** Abaixo disso o número não é salário mensal, anual nem por hora plausível. */
+export const MIN_PLAUSIBLE_SALARY = 100;
 
 function parseAmount(raw: string, suffix: string | undefined, currency: Currency): number {
   // Real usa "." como milhar e "," como decimal; dólar, o contrário.
@@ -79,12 +89,16 @@ function parseAmount(raw: string, suffix: string | undefined, currency: Currency
 }
 
 function matchRange(text: string, regex: RegExp, currency: Currency): SalaryRange | null {
-  const match = regex.exec(text);
-  if (!match?.[1]) return null;
-  const min = parseAmount(match[1], match[2], currency);
-  const max = match[3] ? parseAmount(match[3], match[4] ?? match[2], currency) : min;
-  if (!Number.isFinite(min) || min <= 0) return null;
-  return { min: Math.round(Math.min(min, max)), max: Math.round(Math.max(min, max)), currency };
+  for (const match of text.matchAll(regex)) {
+    if (!match[1]) continue;
+    const after = text.slice((match.index ?? 0) + match[0].length);
+    if (MAGNITUDE_AFTER.test(after)) continue;
+    const min = parseAmount(match[1], match[2], currency);
+    const max = match[3] ? parseAmount(match[3], match[4] ?? match[2], currency) : min;
+    if (!Number.isFinite(min) || min < MIN_PLAUSIBLE_SALARY) continue;
+    return { min: Math.round(Math.min(min, max)), max: Math.round(Math.max(min, max)), currency };
+  }
+  return null;
 }
 
 /** Primeira faixa salarial explícita (com símbolo de moeda) encontrada no texto. */

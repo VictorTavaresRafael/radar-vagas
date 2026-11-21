@@ -1,5 +1,5 @@
-import { and, desc, eq, gte, ilike, ne, or, type SQL } from "drizzle-orm";
-import { ALL_STATUSES, type JobFilters } from "@/domain/filters";
+import { and, count, desc, eq, gte, ilike, ne, or, type SQL } from "drizzle-orm";
+import { ALL_STATUSES, type JobFilters, PAGE_SIZE } from "@/domain/filters";
 import type { MergedJob } from "@/domain/job";
 import type { ScoreResult } from "@/scoring/score";
 import type { Db } from "../client";
@@ -95,8 +95,6 @@ export type JobListItem = Pick<
   | "altUrls"
 >;
 
-const LIST_LIMIT = 200;
-
 function escapeLike(value: string): string {
   return value.replace(/[\\%_]/g, (char) => `\\${char}`);
 }
@@ -142,8 +140,17 @@ export function listJobs(db: Db, filters: JobFilters): Promise<JobListItem[]> {
     })
     .from(jobs)
     .where(and(...filterConditions(filters)))
-    .orderBy(desc(jobs.score), desc(jobs.firstSeenAt))
-    .limit(LIST_LIMIT);
+    .orderBy(desc(jobs.score), desc(jobs.firstSeenAt), desc(jobs.id))
+    .limit(PAGE_SIZE)
+    .offset((filters.page - 1) * PAGE_SIZE);
+}
+
+export async function countJobs(db: Db, filters: JobFilters): Promise<number> {
+  const [row] = await db
+    .select({ total: count() })
+    .from(jobs)
+    .where(and(...filterConditions(filters)));
+  return row?.total ?? 0;
 }
 
 export async function getJob(db: Db, id: string): Promise<JobRow | undefined> {
