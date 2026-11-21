@@ -169,9 +169,9 @@ export const evalCases: readonly EvalCase[] = [
   },
   {
     id: "hibrido-curitiba",
-    note: "Híbrido fora das cidades: inviável, embora o SPEC não tenha filtro para isso.",
+    note: "Híbrido fora das cidades aceitas é inviável.",
     job: { modality: "hibrido", location: "Curitiba, PR", description: REACT_REQ },
-    expected: { eliminations: [], relevant: false },
+    expected: { eliminations: ["presencial"], relevant: false },
   },
   {
     id: "salario-abaixo-piso",
@@ -220,6 +220,24 @@ export const evalCases: readonly EvalCase[] = [
     id: "android-kotlin",
     note: "Mobile nativo não é alvo.",
     job: { title: "Desenvolvedor Android Pleno", description: "Requisitos\n- Kotlin\n- Jetpack" },
+    expected: { eliminations: [], relevant: false },
+  },
+  {
+    id: "angular-front",
+    note: "Angular está no perfil (TCC SIGA): não zera a stack.",
+    job: { description: "Requisitos\n- Angular e TypeScript\n- RxJS" },
+    expected: { eliminations: [], relevant: true },
+  },
+  {
+    id: "vue-diferencial",
+    note: "Vue só como diferencial numa vaga React.",
+    job: { description: `${REACT_REQ}\nDiferenciais\n- Vue.js` },
+    expected: { eliminations: [], relevant: true },
+  },
+  {
+    id: "svelte-front",
+    note: "Svelte sem React.",
+    job: { description: "Requisitos\n- SvelteKit e TypeScript" },
     expected: { eliminations: [], relevant: false },
   },
   {

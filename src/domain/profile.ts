@@ -19,7 +19,7 @@ export interface Profile {
   readonly headline: string;
   readonly currentCompany: string;
   readonly location: string;
-  /** Cidades em que híbrido/presencial é aceitável; presencial em qualquer outra é eliminatório. */
+  /** Cidades em que híbrido/presencial é aceitável; híbrido/presencial em qualquer outra é eliminatório. */
   readonly acceptedCities: readonly string[];
   readonly targets: readonly string[];
   /** Sem experiência profissional: nunca podem aparecer nos fatos nem nos rascunhos. */
