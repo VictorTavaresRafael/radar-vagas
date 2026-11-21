@@ -29,7 +29,27 @@ export const jobFiltersSchema = z.object({
       .catch(undefined),
   ),
   q: z.preprocess(emptyToUndefined, z.string().trim().max(100).optional().catch(undefined)),
+  page: z.preprocess(
+    emptyToUndefined,
+    z.coerce.number().int().min(1).max(1000).catch(1).default(1),
+  ),
 });
+
+/** Vagas por página na listagem. */
+export const PAGE_SIZE = 50;
+
+/** Query string dos filtros ativos, para links de paginação que preservam a busca. */
+export function filtersToQuery(filters: JobFilters, page: number): string {
+  const params = new URLSearchParams();
+  if (filters.q) params.set("q", filters.q);
+  if (filters.minScore > 0) params.set("minScore", String(filters.minScore));
+  if (filters.source) params.set("source", filters.source);
+  if (filters.modality) params.set("modality", filters.modality);
+  if (filters.status) params.set("status", filters.status);
+  if (page > 1) params.set("page", String(page));
+  const query = params.toString();
+  return query ? `?${query}` : "";
+}
 
 export type JobFilters = z.infer<typeof jobFiltersSchema>;
 

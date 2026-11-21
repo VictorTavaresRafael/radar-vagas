@@ -20,6 +20,20 @@ describe("parseSalary", () => {
     expect(parseSalary(text)).toEqual(expected);
   });
 
+  it.each([
+    [
+      "Movimentamos R$ 2 bilhões em crédito. Salário: R$ 6.000",
+      { min: 6000, max: 6000, currency: "BRL" },
+    ],
+    ["Raised $5 billion. Pay: $4,000 - $5,000", { min: 4000, max: 5000, currency: "USD" }],
+    ["Mais de R$ 20 milhões investidos", null],
+    ["Carteira de R$ 2 bi; salário R$ 7 mil", { min: 7000, max: 7000, currency: "BRL" }],
+    ["R$ 9.000 bilíngue", { min: 9000, max: 9000, currency: "BRL" }],
+    ["Prêmio de US$ 51 por indicação", null],
+  ])("ignora cifra da empresa ou valor implausível: %s", (text, expected) => {
+    expect(parseSalary(text)).toEqual(expected);
+  });
+
   it("ignora números sem moeda", () => {
     expect(parseSalary("3 dias presenciais, 5+ anos de experiência")).toBeNull();
   });

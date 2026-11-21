@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { NavLink } from "@/components/nav-link";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -12,32 +13,29 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="pt-BR">
       <body className="min-h-screen font-sans">
-        <header className="border-b border-zinc-200 bg-white/80 backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/80">
-          <nav className="mx-auto flex max-w-6xl items-center gap-6 px-4 py-3">
-            <Link href="/" className="font-semibold tracking-tight">
+        <header className="sticky top-0 z-10 border-b border-zinc-200 bg-white/85 backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/85">
+          <nav className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2.5">
+            <Link href="/" className="mr-2 flex items-center gap-2 font-semibold tracking-tight">
+              <span
+                aria-hidden
+                className="relative inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-600"
+              >
+                <span className="h-2 w-2 rounded-full bg-white" />
+                <span className="absolute inset-0 rounded-full ring-2 ring-emerald-600/30 ring-offset-2 ring-offset-white dark:ring-offset-zinc-900" />
+              </span>
               Radar de Vagas
             </Link>
-            <Link
-              href="/"
-              className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
-            >
-              Vagas
-            </Link>
-            <Link
-              href="/candidaturas"
-              className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
-            >
-              Candidaturas
-            </Link>
-            <Link
-              href="/metricas"
-              className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
-            >
-              Métricas
-            </Link>
+            <div className="flex items-center gap-1">
+              <NavLink href="/">Vagas</NavLink>
+              <NavLink href="/candidaturas">Candidaturas</NavLink>
+              <NavLink href="/metricas">Métricas</NavLink>
+            </div>
           </nav>
         </header>
         <main className="mx-auto max-w-6xl px-4 py-6">{children}</main>
+        <footer className="mx-auto max-w-6xl px-4 pb-8 text-xs text-zinc-500">
+          Candidatura sempre manual, pelo link original da vaga.
+        </footer>
       </body>
     </html>
   );
