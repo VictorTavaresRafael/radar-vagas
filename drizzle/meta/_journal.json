@@ -22,6 +22,13 @@
       "when": 1795292279867,
       "tag": "0002_areas_e_regioes",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1795377752930,
+      "tag": "0003_vagas_encerradas",
+      "breakpoints": true
     }
   ]
 }

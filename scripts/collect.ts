@@ -1,5 +1,6 @@
 import { sources } from "@config/sources";
 import { buildCollectors } from "@/collectors";
+import { createIssueStateChecker } from "@/collectors/github-issues";
 import { createDbFromEnv } from "@/db/client";
 import { listDigestJobs } from "@/db/repositories/jobs";
 import { getEnv } from "@/lib/env";
@@ -25,9 +26,10 @@ try {
     llm,
     notifier: createNotifierFromEnv(env, fetch),
     log: console.log,
+    issueState: createIssueStateChecker(fetch, env.GITHUB_TOKEN),
   });
   console.log(
-    `${report.normalized} vagas coletadas, ${report.unique} únicas: ${report.inserted} novas, ${report.updated} já conhecidas, ${report.alerts.length} com score alto.`,
+    `${report.normalized} vagas coletadas, ${report.unique} únicas: ${report.inserted} novas, ${report.updated} já conhecidas, ${report.alerts.length} com score alto, ${report.closed} encerradas.`,
   );
   for (const line of formatTopJobs(report.top)) console.log(line);
   const notifier = createNotifierFromEnv(env, fetch);

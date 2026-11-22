@@ -71,6 +71,11 @@ export function JobRow({ job, now }: { job: JobListItem; now: Date }) {
               nova
             </span>
           )}
+          {job.closedAt && (
+            <span className="rounded-md bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-500/15 dark:text-amber-300">
+              encerrada
+            </span>
+          )}
           {job.status !== "nova" && (
             <span className="rounded-md bg-sky-100 px-1.5 py-0.5 text-xs font-medium text-sky-800 dark:bg-sky-500/15 dark:text-sky-300">
               {STATUS_LABELS[job.status]}

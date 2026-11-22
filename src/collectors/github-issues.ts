@@ -4,7 +4,7 @@ import type { NormalizedJob } from "@/domain/job";
 import { parseDate } from "@/lib/dates";
 import { markdownToText, normalizeForMatch } from "@/lib/text";
 import { inferContract, inferModality, inferSeniority, parseSalary } from "./infer";
-import { type Collector, type CollectorDeps, getJson, parseItems } from "./types";
+import { type Collector, type CollectorDeps, type FetchLike, getJson, parseItems } from "./types";
 
 export const githubIssueSchema = z.object({
   id: z.number(),
@@ -117,5 +117,36 @@ export function createGithubIssuesCollector(
       );
     },
     normalize: (raw) => normalizeGithubIssue(raw, repo),
+  };
+}
+
+export type IssueState = "open" | "closed";
+
+const ISSUE_URL = /^https:\/\/github\.com\/([\w.-]+)\/([\w.-]+)\/issues\/(\d+)/;
+
+/**
+ * Estado atual de uma issue de vaga pela API do GitHub. null quando a URL não é de issue ou
+ * a API não respondeu: na dúvida a vaga continua aberta.
+ */
+export function createIssueStateChecker(
+  fetchFn: FetchLike,
+  token?: string,
+): (url: string) => Promise<IssueState | null> {
+  return async (url) => {
+    const match = ISSUE_URL.exec(url);
+    if (!match) return null;
+    const [, owner, repo, number] = match;
+    const response = await fetchFn(
+      `https://api.github.com/repos/${owner}/${repo}/issues/${number}`,
+      {
+        headers: {
+          Accept: "application/vnd.github+json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      },
+    );
+    if (!response.ok) return null;
+    const parsed = z.object({ state: z.enum(["open", "closed"]) }).safeParse(await response.json());
+    return parsed.success ? parsed.data.state : null;
   };
 }

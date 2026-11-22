@@ -13,7 +13,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="pt-BR">
       <body className="min-h-screen font-sans">
-        <header className="sticky top-0 z-10 border-b border-zinc-200 bg-white/85 backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/85">
+        <header className="sticky top-0 z-10 print:hidden border-b border-zinc-200 bg-white/85 backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/85">
           <nav className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2.5">
             <Link href="/" className="mr-2 flex items-center gap-2 font-semibold tracking-tight">
               <span
@@ -29,11 +29,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <NavLink href="/">Vagas</NavLink>
               <NavLink href="/candidaturas">Candidaturas</NavLink>
               <NavLink href="/metricas">Métricas</NavLink>
+              <NavLink href="/curriculo">Currículo</NavLink>
             </div>
           </nav>
         </header>
-        <main className="mx-auto max-w-6xl px-4 py-6">{children}</main>
-        <footer className="mx-auto max-w-6xl px-4 pb-8 text-xs text-zinc-500">
+        <main className="mx-auto max-w-6xl px-4 py-6 print:max-w-none print:p-0">{children}</main>
+        <footer className="mx-auto max-w-6xl px-4 pb-8 text-xs text-zinc-500 print:hidden">
           Candidatura sempre manual, pelo link original da vaga.
         </footer>
       </body>

@@ -1,7 +1,15 @@
 import { scoring } from "@config/scoring";
+import type { IssueState } from "@/collectors/github-issues";
 import type { Collector } from "@/collectors/types";
 import type { Db } from "@/db/client";
-import { findExistingJob, insertJob, markJobSeen } from "@/db/repositories/jobs";
+import {
+  closeMissingJobs,
+  findExistingJob,
+  insertJob,
+  listUnseenGithubJobs,
+  markJobClosed,
+  markJobSeen,
+} from "@/db/repositories/jobs";
 import type { MergedJob, NormalizedJob } from "@/domain/job";
 import { mapWithConcurrency } from "@/lib/concurrency";
 import type { LlmClient } from "@/llm/client";
@@ -14,6 +22,8 @@ import { type TopJob, topJobs } from "./report";
 // Igual ao número de conexões do cliente Postgres: mais que isso só enfileiraria no pool.
 const PERSIST_CONCURRENCY = 5;
 const TOP_LIMIT = 10;
+// Uma chamada à API por vaga; o limite mantém a coleta dentro da cota do GitHub.
+const GITHUB_STATE_CHECKS = 40;
 
 export interface CollectDeps {
   readonly db: Db;
@@ -22,6 +32,8 @@ export interface CollectDeps {
   readonly llm: LlmClient | null;
   readonly notifier: Notifier | null;
   readonly log: (message: string) => void;
+  /** Consulta o estado de uma issue do GitHub; sem ela, vagas do GitHub só caducam pelo prazo. */
+  readonly issueState?: (url: string) => Promise<IssueState | null>;
 }
 
 export interface CollectorResult {
@@ -37,6 +49,8 @@ export interface CollectReport {
   readonly inserted: number;
   readonly updated: number;
   readonly alerts: readonly AlertJob[];
+  /** Vagas marcadas como encerradas nesta coleta. */
+  readonly closed: number;
   /** Vagas novas de maior score nesta coleta, para o log. */
   readonly top: readonly TopJob[];
 }
@@ -115,6 +129,29 @@ async function persistAll(
   return outcomes;
 }
 
+/**
+ * Vaga que saiu da fonte deixa a lista na hora. Só com todas as fontes OK: uma fonte fora do
+ * ar faria as vagas dela parecerem encerradas. No GitHub, vale o estado real da issue.
+ */
+async function closeMissing(
+  deps: CollectDeps,
+  results: readonly CollectorResult[],
+): Promise<number> {
+  const { db, scoreContext } = deps;
+  const allOk = results.every((result) => result.error === null);
+  let closed = allOk ? await closeMissingJobs(db, scoreContext.now) : 0;
+  if (deps.issueState) {
+    const unseen = await listUnseenGithubJobs(db, scoreContext.now, GITHUB_STATE_CHECKS);
+    for (const job of unseen) {
+      if ((await deps.issueState(job.url)) === "closed") {
+        await markJobClosed(db, job.id, scoreContext.now);
+        closed += 1;
+      }
+    }
+  }
+  return closed;
+}
+
 export async function runCollect(deps: CollectDeps): Promise<CollectReport> {
   const outcomes = await Promise.all(deps.collectors.map(runCollector));
   for (const { result } of outcomes) {
@@ -128,6 +165,10 @@ export async function runCollect(deps: CollectDeps): Promise<CollectReport> {
   const persisted = await persistAll(deps, unique);
   const insertedJobs = persisted.flatMap((outcome) => (outcome.inserted ? [outcome.inserted] : []));
   const alerts = persisted.flatMap((outcome) => (outcome.alert ? [outcome.alert] : []));
+  const closed = await closeMissing(
+    deps,
+    outcomes.map((outcome) => outcome.result),
+  );
 
   if (deps.notifier && alerts.length > 0) {
     try {
@@ -144,6 +185,7 @@ export async function runCollect(deps: CollectDeps): Promise<CollectReport> {
     inserted: insertedJobs.length,
     updated: unique.length - insertedJobs.length,
     alerts,
+    closed,
     top: topJobs(insertedJobs, TOP_LIMIT),
   };
 }
