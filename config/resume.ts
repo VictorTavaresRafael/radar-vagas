@@ -1,53 +1,51 @@
 /**
- * Texto do currículo que está sendo enviado hoje (copiado do PDF). O detector de
- * palavras-chave compara a vaga com este texto para separar "você tem e não
+ * Texto do currículo que está sendo enviado hoje (versão Full Stack Pleno de 22/11/2026). O
+ * detector de palavras-chave compara a vaga com este texto para separar "você tem e não
  * escreveu" de "você não tem". Os rascunhos não usam este texto: só `profile.facts`.
  */
 export const RESUME_TEXT = `
 Víctor Matheus Tavares Rafael
-Engenheiro de Software em Formação | AWS Certified Cloud Practitioner | Desenvolvedor Web
-victor.tavares.rafael@gmail.com | linkedin.com/in/victor-tavares-rafael-a13846236 | github.com/VictorTavaresRafael
+Desenvolvedor Full Stack Pleno · React, Next.js, TypeScript, Node.js · AWS Certified Cloud Practitioner
+Jaú, SP (mudança planejada para Londrina, PR) · victor.tavares.rafael@gmail.com
+linkedin.com/in/victor-tavares-rafael-a13846236 · github.com/VictorTavaresRafael
 
-Perfil pessoal
-Estudante de Engenharia de Software com experiência prática em soluções de dados e computação em nuvem da AWS. Já atuei com automação de pipelines, modelagem de dados e dashboards com QuickSight. Busco consolidar carreira em engenharia de dados, unindo base sólida em desenvolvimento web e aprendizado contínuo.
-
-Formação
-Universidade Tecnológica Federal do Paraná (UTFPR) — Paraná, BR
-Bacharelado em Engenharia de Software — Ago/2022 - Ago/2026
+Resumo
+Desenvolvedor de Software Pleno na Domus Control, onde construo uma plataforma PWA multi-tenant com
+Next.js, React, TypeScript e Tailwind CSS, integrada a APIs REST e publicada na AWS Amplify. Cuido
+também da qualidade da entrega: criei o CI no GitHub Actions com type-check, testes com Vitest e
+auditoria de dependências. Venho de quase 4 anos com desenvolvimento web (React, TypeScript, Node.js,
+PHP) e de um estágio em dados e IA na AWS. Bacharel em Engenharia de Software pela UTFPR e AWS
+Certified Cloud Practitioner. Busco posição de Full Stack Pleno (React + Node) ou Front-end Pleno.
 
 Experiência
-Compass Uol — Home Office
-Estagiário de Engenharia de Dados na Nuvem AWS — Mai/2025 - Out/2025
-- Atuação prática no ecossistema AWS, com foco em serviços de armazenamento, computação e integração de dados na nuvem.
-- Utilização de ferramentas como Amazon S3 para armazenamento de dados, Amazon EC2 para execução de aplicações e AWS Glue para criação e orquestração de pipelines de dados.
-- Gerenciamento de permissões e políticas de acesso com AWS IAM.
-- Criação de dashboards e visualizações de dados com Amazon QuickSight.
-- Apoio em atividades de automação, monitoramento e boas práticas em arquitetura de dados em nuvem.
+Desenvolvedor de Software Pleno — Domus Control (CLT · jun/2026 – atual)
+- Desenvolvo uma plataforma PWA multi-tenant de gestão para igrejas com Next.js, React, TypeScript e Tailwind CSS.
+- Integro o front-end a APIs REST e trabalho com Git, pull requests e code review no dia a dia.
+- Criei o CI no GitHub Actions, com type-check, testes automatizados com Vitest e auditoria de dependências.
+- Fixei as versões de Node e Bun no deploy da AWS Amplify, bloqueando builds com vulnerabilidades críticas.
+- Padronizei o tratamento de erros dos formulários: erros de campo do back-end exibidos inline e rolagem até o primeiro campo inválido.
+- Redesenhei a listagem de reuniões, corrigi a regeneração de tokens de push e reestruturei fluxos de conta.
 
-Reforce Marketing Digital — Paraná, BR
-Desenvolvedor Web — Dez/2022 - Dez/2024
-- Otimização de sites e landing pages, resultando em uma melhora de 30% na velocidade de carregamento e um aumento de 15% na taxa de conversão de leads.
-- Desenvolvi e implementei funcionalidades com React, TypeScript e Node JS, WordPress, aprimorando a experiência do usuário e a interatividade das plataformas.
-- Gerenciei a infraestrutura de banco de dados (MySQL, MariaDB e PostgreSQL) e a hospedagem dos projetos.
+Estagiário de Engenharia de Dados na AWS — Compass UOL, Innovation Studio Data & AI (mai/2025 – out/2025)
+- Construí pipelines de ETL na AWS com S3, Glue e Lambda, além de Docker, QuickSight, IAM e serviços de IA/ML da AWS.
+- Fui Scrum Master da minha squad por 4 sprints.
 
-Skills e Competências
-Cloud e Engenharia de Dados:
-- Plataformas: Amazon Web Services (AWS).
-- Serviços AWS: S3, EC2, Glue, IAM, CloudWatch, Lambda, Athena, QuickSight, CloudFormation, entre outros.
-- Competências: Criação e gerenciamento de pipelines de dados, modelagem e visualização de dados, automação de processos em nuvem, gerenciamento de permissões e boas práticas de arquitetura AWS.
-- Containers: Docker.
-- Linguagens: Python.
-Desenvolvimento Web e Ferramentas:
-- Frontend: React, TypeScript, WordPress.
-- Backend: NodeJS, PHP.
-- Banco de Dados: MySQL, MariaDB, PostgreSQL.
-- Versionamento: Git.
-Soft Skills:
-- Trabalho em Equipe: Colaboração em squads ágeis e comunicação entre áreas.
-- Proatividade: Busca constante por melhorias e identificação de melhorias.
-- Rápida Adaptação: Facilidade em aprender novas ferramentas e ambientes.
-- Comunicação Efetiva: Clareza ao compartilhar ideias e documentar processos.
+Desenvolvedor Web — Reforce Marketing Digital (estágio, 20 h/semana · dez/2022 – nov/2024)
+- Desenvolvi sites e landing pages com React, TypeScript, WordPress, PHP e MySQL/MariaDB.
+- Cuidei de SEO e performance das páginas.
 
-Certificados
-2025 — AWS Certified: Cloud Practitioner — Amazon Web Services
+Formação e certificação
+- Bacharelado em Engenharia de Software — UTFPR, Cornélio Procópio · 2022 – 2026
+  - TCC SIGA, indicado como destaque pela banca: Angular 21, NestJS 11, Prisma, PostgreSQL, autenticação JWT, controle de acesso RBAC e check-in por QR Code.
+- AWS Certified Cloud Practitioner — Amazon Web Services · válida de out/2025 a out/2028
+
+Competências
+Front-end: React, Next.js, TypeScript, Tailwind CSS, PWA, Angular
+Back-end: Node.js, NestJS, Prisma, APIs REST, PHP
+Bancos de dados: PostgreSQL, MySQL, MariaDB
+Nuvem e DevOps: AWS (Amplify, S3, Lambda, Glue, IAM, QuickSight), Docker, GitHub Actions
+Qualidade: Vitest, testes automatizados, CI, code review
+Métodos: Git, pull requests, Scrum (Scrum Master por 4 sprints)
+
+Idiomas: português nativo; inglês intermediário (leitura e escrita avançadas, conversação intermediária); espanhol básico.
 `;
