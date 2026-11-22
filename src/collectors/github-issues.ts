@@ -1,9 +1,16 @@
 import type { GithubRepo } from "@config/sources";
 import { z } from "zod";
 import type { NormalizedJob } from "@/domain/job";
+import { findTechnologies } from "@/domain/tech-catalog";
 import { parseDate } from "@/lib/dates";
 import { markdownToText, normalizeForMatch } from "@/lib/text";
-import { inferContract, inferModality, inferSeniority, parseSalary } from "./infer";
+import {
+  inferContract,
+  inferModality,
+  inferSeniority,
+  isBrazilLocation,
+  parseSalary,
+} from "./infer";
 import { type Collector, type CollectorDeps, type FetchLike, getJson, parseItems } from "./types";
 
 export const githubIssueSchema = z.object({
@@ -27,6 +34,32 @@ export function githubIssuesUrl(repo: GithubRepo): string {
 /** Tags entre colchetes que indicam modalidade, não local: "[Remoto]", "[Híbrido]". */
 const MODALITY_TAG = /^(remoto|remote|hibrido|hybrid|presencial|home ?office|100% remoto)$/;
 const NOT_A_COMPANY = /^(brasil|brazil|remoto|remote|home ?office|latam|sp|sao paulo)$/;
+
+// Trecho final que descreve a vaga, não quem contrata: "- Pleno", "- Remoto", "- PJ".
+const NOT_A_COMPANY_SUFFIX =
+  /\b(junior|jr|pleno|pl|senior|sr|estagio|trainee|remoto|remote|hibrido|hybrid|presencial|pj|clt|freela|freelancer|contrato|vaga|afirmativa|pcd|full ?time|part ?time|meio periodo)\b/;
+
+/**
+ * "Cargo - Detalhe - Empresa": sem "@" nem "na Empresa", o último trecho depois de " - " é a
+ * empresa quando não descreve a vaga (nível, modalidade, contrato), não é local nem tecnologia,
+ * e não está todo em maiúsculas (costuma ser cidade: "PORT LOUIS").
+ */
+function companyFromSuffix(rest: string): { title: string; company: string } | null {
+  const parts = rest.split(/\s+[-–|]\s+/);
+  if (parts.length < 2) return null;
+  const candidate = (parts.at(-1) ?? "").trim();
+  const normalized = normalizeForMatch(candidate);
+  const looksLikeName =
+    candidate.length >= 2 &&
+    candidate.length <= 40 &&
+    !/[/()]/.test(candidate) &&
+    candidate !== candidate.toUpperCase() &&
+    !NOT_A_COMPANY.test(normalized) &&
+    !NOT_A_COMPANY_SUFFIX.test(normalized) &&
+    isBrazilLocation(candidate) !== true &&
+    findTechnologies(candidate).length === 0;
+  return looksLikeName ? { title: parts.slice(0, -1).join(" - "), company: candidate } : null;
+}
 
 interface ParsedTitle {
   readonly title: string;
@@ -56,6 +89,9 @@ export function parseIssueTitle(rawTitle: string): ParsedTitle {
     !NOT_A_COMPANY.test(normalizeForMatch(prepositionMatch[2]))
   ) {
     [rest, company] = [prepositionMatch[1], prepositionMatch[2]];
+  } else {
+    const suffix = companyFromSuffix(rest);
+    if (suffix) [rest, company] = [suffix.title, suffix.company];
   }
   return {
     title: rest.replace(/\s*[-|–]\s*$/, "").trim(),

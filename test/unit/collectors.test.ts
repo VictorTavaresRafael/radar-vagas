@@ -132,6 +132,43 @@ describe("GitHub Issues", () => {
       "Desenvolvedor React Pleno remoto no Brasil",
       { title: "Desenvolvedor React Pleno remoto no Brasil", company: null, location: null },
     ],
+    // Títulos reais do backend-br/vagas e do frontendbr/vagas (nov/2026).
+    [
+      "[Remoto] Desenvolvedor(a) Backend Pleno - White Label e Plataforma - Mimix AI",
+      {
+        title: "Desenvolvedor(a) Backend Pleno - White Label e Plataforma",
+        company: "Mimix AI",
+        location: null,
+      },
+    ],
+    [
+      "[Remoto] Desenvolvedor(a) Back-end Júnior - Python / AI Coding & Agentic AI - MKdigital",
+      {
+        title: "Desenvolvedor(a) Back-end Júnior - Python / AI Coding & Agentic AI",
+        company: "MKdigital",
+        location: null,
+      },
+    ],
+    [
+      "Fullstack Developer - Jazida.com",
+      { title: "Fullstack Developer", company: "Jazida.com", location: null },
+    ],
+    [
+      "Back-end Developer JR - PORT LOUIS",
+      { title: "Back-end Developer JR - PORT LOUIS", company: null, location: null },
+    ],
+    [
+      "Desenvolvedor Front-end - Pleno",
+      { title: "Desenvolvedor Front-end - Pleno", company: null, location: null },
+    ],
+    [
+      "Desenvolvedor Back-end - Node.js",
+      { title: "Desenvolvedor Back-end - Node.js", company: null, location: null },
+    ],
+    [
+      "Desenvolvedor Front-end - Londrina",
+      { title: "Desenvolvedor Front-end - Londrina", company: null, location: null },
+    ],
   ])("parseIssueTitle(%s)", (title, expected) => {
     expect(parseIssueTitle(title)).toEqual(expected);
   });

@@ -111,6 +111,9 @@ export async function markJobSeen(
     .set({
       lastSeenAt: now,
       closedAt: null,
+      // Correções na leitura do título (empresa, cargo) chegam às vagas já gravadas.
+      title: job.title,
+      company: job.company,
       altUrls: [...existing.altUrls, ...urls],
       area: classifyArea(job.title),
       region: inferRegion(job.location, job.source),
