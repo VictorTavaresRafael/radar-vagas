@@ -8,6 +8,7 @@ import {
   ilike,
   inArray,
   isNull,
+  lt,
   ne,
   not,
   or,
@@ -247,7 +248,7 @@ export async function closeMissingJobs(db: Db, now: Date): Promise<number> {
       and(
         isNull(jobs.closedAt),
         inArray(jobs.source, [...COMPLETE_SOURCES]),
-        sql`${jobs.lastSeenAt} < ${now}`,
+        lt(jobs.lastSeenAt, now),
       ),
     )
     .returning({ id: jobs.id });
@@ -263,7 +264,7 @@ export function listUnseenGithubJobs(
   return db
     .select({ id: jobs.id, url: jobs.url })
     .from(jobs)
-    .where(and(isNull(jobs.closedAt), eq(jobs.source, "github"), sql`${jobs.lastSeenAt} < ${now}`))
+    .where(and(isNull(jobs.closedAt), eq(jobs.source, "github"), lt(jobs.lastSeenAt, now)))
     .orderBy(desc(jobs.lastSeenAt))
     .limit(limit);
 }
