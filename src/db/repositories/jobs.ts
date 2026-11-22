@@ -8,6 +8,7 @@ import {
   ilike,
   inArray,
   isNull,
+  lt,
   ne,
   not,
   or,
@@ -109,6 +110,7 @@ export async function markJobSeen(
     .update(jobs)
     .set({
       lastSeenAt: now,
+      closedAt: null,
       altUrls: [...existing.altUrls, ...urls],
       area: classifyArea(job.title),
       region: inferRegion(job.location, job.source),
@@ -137,6 +139,7 @@ export type JobListItem = Pick<
   | "altUrls"
   | "region"
   | "url"
+  | "closedAt"
 >;
 
 function escapeLike(value: string): string {
@@ -162,6 +165,7 @@ function filterConditions(filters: JobFilters): SQL[] {
   }
   if (filters.minScore > 0) conditions.push(gte(jobs.score, filters.minScore));
   if (!filters.closed) {
+    conditions.push(isNull(jobs.closedAt));
     // Relativo à coleta mais recente: se a coleta parar, a lista não esvazia sozinha.
     conditions.push(
       sql`${jobs.lastSeenAt} >= (select max(j.last_seen_at) from jobs j) - make_interval(days => ${scoring.staleAfterDays})`,
@@ -202,6 +206,7 @@ const listColumns = {
   altUrls: jobs.altUrls,
   region: jobs.region,
   url: jobs.url,
+  closedAt: jobs.closedAt,
 };
 
 export function listJobs(db: Db, filters: JobFilters): Promise<JobListItem[]> {
@@ -227,6 +232,47 @@ export async function countJobs(db: Db, filters: JobFilters): Promise<number> {
   return row?.total ?? 0;
 }
 
+/**
+ * Fontes que entregam o quadro inteiro de vagas abertas: se a vaga não veio numa coleta
+ * sem falhas, ela saiu do ar. GitHub (só as 100 issues mais recentes) e Remotive (busca)
+ * não entram, porque uma vaga ainda aberta pode simplesmente não ter vindo.
+ */
+const COMPLETE_SOURCES = ["greenhouse", "lever"] as const;
+
+/** Marca como encerradas as vagas de fontes completas que não vieram na coleta de `now`. */
+export async function closeMissingJobs(db: Db, now: Date): Promise<number> {
+  const closed = await db
+    .update(jobs)
+    .set({ closedAt: now })
+    .where(
+      and(
+        isNull(jobs.closedAt),
+        inArray(jobs.source, [...COMPLETE_SOURCES]),
+        lt(jobs.lastSeenAt, now),
+      ),
+    )
+    .returning({ id: jobs.id });
+  return closed.length;
+}
+
+/** Vagas do GitHub que não vieram nesta coleta e ainda constam como abertas. */
+export function listUnseenGithubJobs(
+  db: Db,
+  now: Date,
+  limit: number,
+): Promise<Pick<JobRow, "id" | "url">[]> {
+  return db
+    .select({ id: jobs.id, url: jobs.url })
+    .from(jobs)
+    .where(and(isNull(jobs.closedAt), eq(jobs.source, "github"), lt(jobs.lastSeenAt, now)))
+    .orderBy(desc(jobs.lastSeenAt))
+    .limit(limit);
+}
+
+export async function markJobClosed(db: Db, id: string, now: Date): Promise<void> {
+  await db.update(jobs).set({ closedAt: now }).where(eq(jobs.id, id));
+}
+
 /** Melhores vagas coletadas nas últimas 24 h, para o resumo diário. */
 export function listDigestJobs(db: Db, now: Date): Promise<JobListItem[]> {
   const since = new Date(now.getTime() - 24 * 60 * 60 * 1000);
@@ -239,6 +285,7 @@ export function listDigestJobs(db: Db, now: Date): Promise<JobListItem[]> {
         gte(jobs.score, scoring.digest.minScore),
         gte(jobs.firstSeenAt, since),
         eq(jobs.status, "nova"),
+        isNull(jobs.closedAt),
       ),
     )
     .orderBy(desc(jobs.score), desc(jobs.firstSeenAt))

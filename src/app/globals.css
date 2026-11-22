@@ -15,3 +15,15 @@
     @apply bg-zinc-50 text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-100;
   }
 }
+
+/* Impressão (currículo em PDF): página branca e margens de A4, mesmo no tema escuro. */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm 16mm;
+  }
+  body {
+    background: white;
+    color: black;
+  }
+}

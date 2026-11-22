@@ -1,3 +1,4 @@
+import { cv } from "@config/cv";
 import { profile } from "@config/profile";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -7,6 +8,7 @@ import { saveNotesAction } from "@/app/actions";
 import { ApplicationForm } from "@/components/application-form";
 import { DraftHistory } from "@/components/draft-history";
 import { DraftsPanel } from "@/components/drafts-panel";
+import { EmailDraft } from "@/components/email-draft";
 import { KeywordList } from "@/components/keyword-list";
 import { ScoreBadge } from "@/components/score-badge";
 import { ScoreBreakdownView } from "@/components/score-breakdown";
@@ -18,6 +20,7 @@ import { getJob } from "@/db/repositories/jobs";
 import type { EventRow, JobRow } from "@/db/schema";
 import { MODALITY_LABELS, SOURCE_LABELS } from "@/domain/job";
 import { JOB_STATUSES, STATUS_LABELS } from "@/domain/status";
+import { buildApplicationEmail } from "@/drafts/email";
 import { generateDrafts } from "@/drafts/generate";
 import { formatDate } from "@/lib/dates";
 import { getEnv } from "@/lib/env";
@@ -65,6 +68,7 @@ export default async function JobPage({ params }: PageProps) {
   const history = await listJobEvents(db, job.id);
   const draftHistory = await listDraftGenerations(db, job.id);
   const drafts = await generateDrafts(job, profile, null);
+  const email = buildApplicationEmail(job, profile, cv);
   const salary = formatSalary(job.salaryMin, job.salaryMax, job.currency);
   const facts = [
     job.location,
@@ -104,6 +108,11 @@ export default async function JobPage({ params }: PageProps) {
               </a>
             ))}
           </div>
+          {job.closedAt && (
+            <p className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:bg-amber-500/10 dark:text-amber-300">
+              Esta vaga saiu da fonte em {formatDate(job.closedAt)}: provavelmente foi encerrada.
+            </p>
+          )}
           <p className="text-xs text-zinc-500">
             A candidatura é sempre manual, pelo link original.
           </p>
@@ -115,6 +124,9 @@ export default async function JobPage({ params }: PageProps) {
         <div className="space-y-6">
           <div className={card}>
             <ScoreBreakdownView breakdown={job.scoreBreakdown} />
+          </div>
+          <div className={card}>
+            <EmailDraft email={email} />
           </div>
           <div className={card}>
             <DraftsPanel

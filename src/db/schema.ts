@@ -50,6 +50,8 @@ export const jobs = pgTable(
     // Derivados do título e do local na coleta; vagas antigas são preenchidas na coleta seguinte.
     area: text("area").$type<JobArea>(),
     region: text("region").$type<Region>(),
+    // Preenchido quando a coleta confirma que a vaga saiu da fonte; volta a null se reaparecer.
+    closedAt: timestamptz("closed_at"),
   },
   (table) => [
     uniqueIndex("jobs_source_external_id_idx").on(table.source, table.externalId),

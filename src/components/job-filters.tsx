@@ -117,7 +117,7 @@ export function JobFiltersForm({
             defaultChecked={filters.closed}
             className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-700"
           />
-          Mostrar vagas que sumiram da fonte
+          Mostrar vagas encerradas ou que sumiram da fonte
         </label>
       </div>
       <div className="col-span-2 flex flex-wrap items-end gap-x-3 gap-y-1 sm:col-span-3 lg:col-span-4">
